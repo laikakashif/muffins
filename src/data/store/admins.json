@@ -1,0 +1,18 @@
+[
+  {
+    "id": "admin_master",
+    "username": "admin",
+    "passwordHash": "pbkdf2$100000$e854d695a9bbea94a536279e0ffceea8$850ecdd80a2356a0a821d2e15addec2634c55b2b6b5ab5a95126451289200e19a373ec8d98efa11f0fe1abf5c031de42761a2dcd8dec5b399dd79fc978f2464e",
+    "role": "superadmin",
+    "createdAt": "2026-09-07T06:34:17.264Z",
+    "updatedAt": "2026-09-07T06:39:02.247Z"
+  },
+  {
+    "id": "admin_asifa_1788762963968",
+    "username": "Asifa",
+    "passwordHash": "pbkdf2$100000$4d8fd6210da22e612cc46835a00eea80$cc360d38dae7cb49d9245f9b605309afb89e2e7d986689b11a85dfe6f3f2a9ef973fd5d15bdcf17c52f9eb9e30501af96fb75d32093ac0cd09672b64383d2beb",
+    "role": "admin",
+    "createdAt": "2026-09-07T06:36:03.968Z",
+    "updatedAt": "2026-09-07T06:39:02.247Z"
+  }
+]

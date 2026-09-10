@@ -1,0 +1,8 @@
+{
+  "name": "Muffinns Sweets & Bakers",
+  "description": "A high-end animated website and order management dashboard for Muffinns Sweets & Bakers, featuring an interactive menu, AI customer assistance, a real-time order tracker, and QR payment integration.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

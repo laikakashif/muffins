@@ -1,0 +1,218 @@
+{
+  "$schema": "https://raw.githubusercontent.com/firebase/firebase-tools/master/schema/firestore-blueprint.json",
+  "entities": {
+    "products": {
+      "description": "Bakery product catalog with name, price, description, image_url, and category",
+      "attributes": {
+        "id": {
+          "type": "string",
+          "description": "Unique product ID",
+          "required": true
+        },
+        "name": {
+          "type": "string",
+          "description": "Product display name",
+          "required": true
+        },
+        "price": {
+          "type": "number",
+          "description": "Price in PKR",
+          "required": true
+        },
+        "description": {
+          "type": "string",
+          "description": "Product description",
+          "required": false
+        },
+        "image_url": {
+          "type": "string",
+          "description": "Image URL from Firebase Storage or CDN",
+          "required": true
+        },
+        "category": {
+          "type": "string",
+          "description": "Product category (e.g., Cakes, Sweets, Savories)",
+          "required": true
+        },
+        "createdAt": {
+          "type": "timestamp",
+          "description": "Creation timestamp",
+          "required": false
+        },
+        "updatedAt": {
+          "type": "timestamp",
+          "description": "Last updated timestamp",
+          "required": false
+        }
+      },
+      "accessRules": [
+        {
+          "userRole": "public",
+          "allow": ["read"]
+        },
+        {
+          "userRole": "admin",
+          "allow": ["create", "update", "delete"]
+        }
+      ]
+    },
+    "menu_items": {
+      "description": "Store menu items with prices, descriptions, categories, and custom image URLs",
+      "attributes": {
+        "id": {
+          "type": "string",
+          "description": "Unique menu item ID",
+          "required": true
+        },
+        "name": {
+          "type": "string",
+          "description": "Item title",
+          "required": true
+        },
+        "category": {
+          "type": "string",
+          "description": "Category name",
+          "required": true
+        },
+        "description": {
+          "type": "string",
+          "description": "Item description",
+          "required": false
+        },
+        "basePrice": {
+          "type": "number",
+          "description": "Base price in PKR",
+          "required": true
+        },
+        "image": {
+          "type": "string",
+          "description": "Image URL or Data URI",
+          "required": true
+        },
+        "badge": {
+          "type": "string",
+          "description": "Special badge like Signature or Special",
+          "required": false
+        },
+        "isAvailable": {
+          "type": "boolean",
+          "description": "Whether item is currently available for ordering",
+          "required": false
+        },
+        "updatedAt": {
+          "type": "timestamp",
+          "description": "Last update timestamp",
+          "required": false
+        }
+      },
+      "accessRules": [
+        {
+          "userRole": "public",
+          "allow": ["read", "create", "update", "delete"]
+        }
+      ]
+    },
+    "posters": {
+      "description": "Promotional poster cards displayed in the menu section",
+      "attributes": {
+        "id": {
+          "type": "string",
+          "description": "Poster ID",
+          "required": true
+        },
+        "title": {
+          "type": "string",
+          "description": "Poster title",
+          "required": true
+        },
+        "subtitle": {
+          "type": "string",
+          "description": "Poster subtitle",
+          "required": false
+        },
+        "category": {
+          "type": "string",
+          "description": "Associated menu category",
+          "required": true
+        },
+        "searchKeyword": {
+          "type": "string",
+          "description": "Filter search term",
+          "required": false
+        },
+        "image": {
+          "type": "string",
+          "description": "Poster image URL or Data URI",
+          "required": true
+        },
+        "badge": {
+          "type": "string",
+          "description": "Poster badge text",
+          "required": false
+        },
+        "color": {
+          "type": "string",
+          "description": "Tailwind color classes",
+          "required": false
+        }
+      },
+      "accessRules": [
+        {
+          "userRole": "public",
+          "allow": ["read", "create", "update", "delete"]
+        }
+      ]
+    },
+    "orders": {
+      "description": "Customer order records placed via the web store",
+      "attributes": {
+        "id": {
+          "type": "string",
+          "description": "Order ID",
+          "required": true
+        },
+        "customerName": {
+          "type": "string",
+          "description": "Customer full name",
+          "required": true
+        },
+        "phone": {
+          "type": "string",
+          "description": "Customer phone number",
+          "required": true
+        },
+        "address": {
+          "type": "string",
+          "description": "Delivery address",
+          "required": true
+        },
+        "total": {
+          "type": "number",
+          "description": "Order total price in PKR",
+          "required": true
+        },
+        "status": {
+          "type": "string",
+          "description": "Order status (Pending, Confirmed, Out for Delivery, Delivered, Cancelled)",
+          "required": true
+        },
+        "items": {
+          "type": "array",
+          "description": "List of ordered items with quantities",
+          "required": true
+        },
+        "createdAt": {
+          "type": "timestamp",
+          "description": "Order creation timestamp",
+          "required": false
+        }
+      },
+      "accessRules": [
+        {
+          "userRole": "public",
+          "allow": ["read", "create", "update", "delete"]
+        }
+      ]
+    }
+  }
+}

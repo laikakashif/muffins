@@ -1,0 +1,4 @@
+flask>=2.3.0
+firebase-admin>=6.2.0
+Flask-WTF>=1.2.0
+python-dotenv>=1.0.0

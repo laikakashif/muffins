@@ -1,0 +1,28 @@
+[
+  {
+    "id": "ORD-18360",
+    "order_id": "ORD-18360",
+    "customerName": "Ahmad Khan",
+    "customer_name": "Ahmad Khan",
+    "customerPhone": "03011234567",
+    "phone": "03011234567",
+    "customerAddress": "Model Town A",
+    "address": "Model Town A",
+    "city": "Bahawalpur",
+    "items": [
+      {
+        "name": "Mango Three Milk Cake",
+        "price": 1800,
+        "quantity": 1,
+        "qty": 1,
+        "total": 1800
+      }
+    ],
+    "totalAmount": 1800,
+    "total_price": 1800,
+    "status": "Processing",
+    "paymentMethod": "Cash on Delivery",
+    "createdAt": "2026-09-07T08:17:12.819Z",
+    "created_at": "9/7/2026, 08:17:12"
+  }
+]

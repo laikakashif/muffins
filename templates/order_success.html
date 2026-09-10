@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Placed • Muffinns Confectionery</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body class="bg-amber-50/30 text-stone-800 min-h-screen antialiased flex flex-col font-sans">
+
+  <!-- TOP HEADER -->
+  <header class="bg-white border-b border-amber-200/60 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <a href="/" class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white shadow-md shadow-orange-500/20 text-2xl font-black">
+          M
+        </a>
+        <div>
+          <a href="/" class="text-xl sm:text-2xl font-black text-stone-900 tracking-tight hover:text-orange-600 transition">Muffinns</a>
+          <p class="text-xs text-stone-500 font-medium -mt-0.5">Artisanal Bakery & Patashay</p>
+        </div>
+      </div>
+
+      <nav class="flex items-center gap-3">
+        <a href="/#catalog" class="text-xs sm:text-sm font-semibold text-stone-700 hover:text-orange-600 transition px-3 py-1.5 rounded-lg hover:bg-orange-50">
+          Storefront
+        </a>
+        <a href="https://wa.me/{{ whatsapp_number }}" target="_blank" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition flex items-center gap-1">
+          <span>WhatsApp Help</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-16 flex-1 w-full space-y-6">
+
+    <!-- SUCCESS CARD -->
+    <div class="bg-white rounded-3xl border border-amber-200/80 shadow-md p-6 sm:p-10 text-center space-y-6">
+      
+      <!-- CELEBRATION ICON -->
+      <div class="w-20 h-20 rounded-full bg-emerald-100 border-4 border-emerald-50 text-emerald-600 mx-auto flex items-center justify-center text-4xl shadow-md shadow-emerald-500/10">
+        ✓
+      </div>
+
+      <div class="space-y-2">
+        <span class="inline-block px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200">
+          Order Successfully Placed
+        </span>
+        <h1 class="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">
+          Thank you, {{ order.customer_name }}!
+        </h1>
+        <p class="text-sm text-stone-500 max-w-md mx-auto">
+          We have received your order. Our master baker is preparing your fresh selection for delivery.
+        </p>
+      </div>
+
+      <!-- ORDER META PILL -->
+      <div class="inline-flex flex-wrap items-center justify-center gap-3 p-3 rounded-2xl bg-amber-50/80 border border-amber-200 text-xs text-stone-700 font-medium">
+        <span>Order ID: <strong class="font-mono text-orange-600 font-black text-sm">{{ order.order_id }}</strong></span>
+        <span class="text-stone-300">•</span>
+        <span>Status: <span class="bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-md">{{ order.status }}</span></span>
+        <span class="text-stone-300">•</span>
+        <span>Saved in Firestore: <code class="text-emerald-700 font-bold">orders/{{ order.order_id }}</code></span>
+      </div>
+
+      <!-- DETAILS BOX -->
+      <div class="text-left bg-stone-50/60 rounded-2xl border border-stone-200/80 p-5 space-y-4">
+        <h2 class="text-xs font-bold text-stone-500 uppercase tracking-wider border-b border-stone-200 pb-2">
+          Customer & Delivery Details
+        </h2>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <div>
+            <span class="text-stone-400 block text-[11px]">Customer Name:</span>
+            <strong class="text-stone-900 text-sm font-bold">{{ order.customer_name }}</strong>
+          </div>
+          <div>
+            <span class="text-stone-400 block text-[11px]">Contact Phone:</span>
+            <strong class="text-stone-900 text-sm font-bold">{{ order.phone }}</strong>
+          </div>
+          <div class="sm:col-span-2">
+            <span class="text-stone-400 block text-[11px]">Delivery Address:</span>
+            <span class="text-stone-800 font-medium text-xs">{{ order.address }}, {{ order.city }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ORDER ITEMS BREAKDOWN -->
+      <div class="text-left bg-stone-50/60 rounded-2xl border border-stone-200/80 p-5 space-y-3">
+        <h2 class="text-xs font-bold text-stone-500 uppercase tracking-wider border-b border-stone-200 pb-2">
+          Ordered Treats
+        </h2>
+        
+        <div class="divide-y divide-stone-200/60 text-xs">
+          {% for item in order.items %}
+            <div class="py-2.5 flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-orange-400"></span>
+                <span class="font-bold text-stone-800">{{ item.name or item.itemTitle }}</span>
+                <span class="text-stone-400">× {{ item.qty or item.quantity or 1 }}</span>
+              </div>
+              <span class="font-bold text-stone-900">Rs {{ (item.price or 0) * (item.qty or item.quantity or 1) }}</span>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="pt-3 border-t border-stone-200 flex items-center justify-between text-sm">
+          <span class="font-black text-stone-900">Total Price (Cash on Delivery):</span>
+          <span class="font-black text-xl text-orange-600">Rs {{ order.total or order.total_price }}</span>
+        </div>
+      </div>
+
+      <!-- ACTION BUTTONS WITH WHATSAPP CONFIRMATION -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+        <!-- 💬 WHATSAPP CONFIRMATION BUTTON -->
+        <a 
+          href="https://wa.me/{{ whatsapp_number }}?text={{ ('Assalamu Alaikum Muffinns Bakery! I placed order #' ~ order.order_id ~ ' for Rs ' ~ (order.total or order.total_price) ~ ' for delivery to ' ~ order.address ~ ', ' ~ order.city ~ '. Customer: ' ~ order.customer_name ~ ' (' ~ order.phone ~ '). Please confirm!') | urlencode }}" 
+          target="_blank"
+          class="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-600/20 transition flex items-center justify-center gap-2"
+        >
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+          <span>Confirm on WhatsApp →</span>
+        </a>
+
+        <a href="/#catalog" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm shadow-md shadow-orange-500/20 transition">
+          Return to Bakery Menu
+        </a>
+
+        <a href="/" class="w-full sm:w-auto px-6 py-3 rounded-xl border border-stone-300 hover:bg-stone-50 text-stone-700 font-semibold text-sm transition">
+          Shop More Items
+        </a>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="mt-auto bg-stone-900 text-stone-400 text-xs py-8 border-t border-stone-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <p class="font-semibold text-stone-200">Muffinns Sweets & Bakers</p>
+        <p class="mt-0.5 text-stone-400 text-[11px]">Bahawalpur, Punjab</p>
+      </div>
+      <div class="flex items-center gap-4 text-xs">
+        <a href="/" class="hover:text-white">Home</a>
+        <a href="/bwp-panel-7781" class="hover:text-white">Admin Management</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Ensure cart in localStorage is completely wiped upon visiting success page
+    try {
+      localStorage.removeItem('muffinns_cart');
+    } catch (e) {}
+
+    // Confetti celebration
+    window.addEventListener('DOMContentLoaded', () => {
+      try {
+        if (typeof confetti === 'function') {
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+        }
+      } catch (e) {}
+    });
+  </script>
+</body>
+</html>

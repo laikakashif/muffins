@@ -1,0 +1,735 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&family=Montserrat:ital,wght@0,600;0,700;0,800;0,900;1,700&family=Lato:ital,wght@0,300;0,400;0,700;1,400&family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Fira+Code:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Outfit", "Inter", system-ui, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-mono: "Fira Code", monospace;
+
+  --color-brand-cream: #FAF6F0;
+  --color-brand-sugar: #FFFDF9;
+  --color-brand-caramel: #8E4A23;
+  --color-brand-honey: #D4AF37;
+  --color-brand-gold: #C2933F;
+  --color-brand-chocolate: #3D2213;
+  --color-brand-marshmallow: #FDF1E6;
+  --color-brand-glaze: rgba(142, 74, 35, 0.08);
+}
+
+/* Base custom interactive effects */
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100vh;
+    background-color: #FAF6F0;
+    color: #3D2213;
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+
+  #root {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  img, video, iframe {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* Custom premium visual elements */
+.glass-panel {
+  background: rgba(255, 253, 249, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(142, 74, 35, 0.08);
+}
+
+.dark-glass-panel {
+  background: rgba(61, 34, 19, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 253, 249, 0.05);
+}
+
+.gold-border-gradient {
+  border: 2px solid;
+  border-image: linear-gradient(to right, #D4AF37, #C2933F, #FAF6F0) 1;
+}
+
+/* 3D Rotator and floaters */
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(3deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes float-reverse {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(12px) rotate(-3deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.animate-float-slow {
+  animation: float 7s ease-in-out infinite;
+}
+
+.animate-float-reverse-slow {
+  animation: float-reverse 8s ease-in-out infinite;
+}
+
+/* Hide scrollbars for slick carousels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Global Theme Transition */
+body, div, header, section, footer, button, input, h1, h2, h3, h4, h5, h6, p, span, a, label {
+  transition: background-color 0.4s ease-out, border-color 0.4s ease-out, color 0.4s ease-out;
+}
+
+/* Theme overrides */
+.theme-velvet {
+  --color-brand-cream: #FCF4F6;
+  --color-brand-sugar: #FFF9FA;
+  --color-brand-caramel: #801832; /* Royal Plum */
+  --color-brand-honey: #DCAE9E; /* Rose Gold */
+  --color-brand-gold: #C07B88;
+  --color-brand-chocolate: #400B1A; /* Black Cherry */
+  --color-brand-marshmallow: #FDF0F3;
+  --color-brand-glaze: rgba(128, 24, 50, 0.08);
+}
+
+.theme-pistachio {
+  --color-brand-cream: #F1F6F0;
+  --color-brand-sugar: #FAFCFA;
+  --color-brand-caramel: #2D5F39; /* Deep Forest Sage */
+  --color-brand-honey: #94C475; /* Cream Pistachio */
+  --color-brand-gold: #73AA43;
+  --color-brand-chocolate: #12301A; /* Bitter Greens chocolate */
+  --color-brand-marshmallow: #E5EDE3;
+  --color-brand-glaze: rgba(45, 95, 57, 0.08);
+}
+
+.theme-espresso {
+  --color-brand-cream: #14110F; /* Midnight Espresso */
+  --color-brand-sugar: #1E1916;
+  --color-brand-caramel: #DDA15E; /* Warm Caramel Macchiato */
+  --color-brand-honey: #E6CCB2; /* Milky Foam */
+  --color-brand-gold: #B58463;
+  --color-brand-chocolate: #FAF0E6; /* Light Latte Cream text */
+  --color-brand-marshmallow: #2B231F;
+  --color-brand-glaze: rgba(221, 161, 94, 0.15);
+}
+
+.theme-cozy_brown {
+  --color-brand-cream: #F4ECE1; /* Light warm almond oat cream background */
+  --color-brand-sugar: #FAF5EE; /* Crisp whipped hazelnut cream surface */
+  --color-brand-caramel: #6B3E26; /* Deep rich roasted chestnut brown */
+  --color-brand-honey: #B87333; /* Warm copper/cinnamon brown accent */
+  --color-brand-gold: #8B4513; /* Saddle brown gold tone */
+  --color-brand-chocolate: #2E1A0F; /* Dark dark cocoa espresso text */
+  --color-brand-marshmallow: #E8D8C8; /* Soft latte biscuit highlight */
+  --color-brand-glaze: rgba(107, 62, 38, 0.1);
+}
+
+.theme-golden_sprinkle {
+  --color-brand-cream: #FFFDF0; /* Soft warm gold cream */
+  --color-brand-sugar: #FFFDF6; /* Warm glowing sugar */
+  --color-brand-caramel: #D4AF37; /* Metallic Gold */
+  --color-brand-honey: #FF3E6C; /* Iridescent Pink */
+  --color-brand-gold: #FFC300; /* Rich Golden Gold */
+  --color-brand-chocolate: #4D1234; /* Rich Plum Chocolate */
+  --color-brand-marshmallow: #FFF8E7; /* Light Biscuit Gold */
+  --color-brand-glaze: rgba(212, 175, 55, 0.18);
+}
+
+.theme-muffin_galaxy {
+  --color-brand-cream: #2A1B3D; /* Deep space purple 🪐 */
+  --color-brand-sugar: #37234F; /* Cosmic nebula panel surface */
+  --color-brand-caramel: #F4A261; /* Muffin-orange accent */
+  --color-brand-honey: #E9C46A; /* Golden crumble / stardust accent */
+  --color-brand-gold: #E76F51; /* Popcorn-red accent */
+  --color-brand-chocolate: #FFF8F0; /* Bright star text */
+  --color-brand-marshmallow: #462C66; /* Soft cosmic lavender container */
+  --color-brand-glaze: rgba(244, 162, 97, 0.22);
+}
+
+.theme-muffin_party {
+  --color-brand-cream: #FFF9F2; /* Creamy party canvas */
+  --color-brand-sugar: #FFFFFF; /* Pure white card surface */
+  --color-brand-caramel: #FF9F1C; /* Main bright orange 🍊 */
+  --color-brand-honey: #00BBF9; /* Sky blue 💙 */
+  --color-brand-gold: #F72585; /* Hot pink 💗 */
+  --color-brand-chocolate: #1D2D44; /* Deep playful navy text */
+  --color-brand-marshmallow: #E8F8F5; /* Party green soft panel */
+  --color-brand-glaze: rgba(255, 159, 28, 0.25);
+  font-family: 'Quicksand', var(--font-sans);
+}
+
+.theme-muffin_party h1,
+.theme-muffin_party h2,
+.theme-muffin_party h3,
+.theme-muffin_party .font-bold,
+.theme-muffin_party .font-black {
+  font-family: 'Fredoka', cursive, sans-serif;
+}
+
+/* Muffin Party Keyframes & Animations */
+@keyframes party-fly-in-left {
+  0% { opacity: 0; transform: translateX(-60px) rotate(-8deg) scale(0.9); }
+  100% { opacity: 1; transform: translateX(0) rotate(0deg) scale(1); }
+}
+
+@keyframes party-fly-in-right {
+  0% { opacity: 0; transform: translateX(60px) rotate(8deg) scale(0.9); }
+  100% { opacity: 1; transform: translateX(0) rotate(0deg) scale(1); }
+}
+
+@keyframes party-pop-bounce {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.08) rotate(3deg); }
+}
+
+.theme-muffin_party .party-fly-in {
+  animation: party-fly-in-left 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.theme-muffin_party .party-3d-card {
+  background: #FFFFFF;
+  border: 3px solid #1D2D44;
+  border-radius: 24px;
+  box-shadow: 6px 6px 0px #2BAE66, 12px 12px 0px rgba(0, 187, 249, 0.3);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.theme-muffin_party .party-3d-card:hover {
+  transform: translateY(-10px) rotate(-2deg) scale(1.03);
+  box-shadow: 10px 10px 0px #F72585, 16px 16px 0px #00BBF9;
+  border-color: #FF9F1C;
+}
+
+.theme-muffin_party .party-pop-btn {
+  background: #FF9F1C;
+  color: #FFFFFF;
+  font-weight: 800;
+  border: 3px solid #1D2D44;
+  border-radius: 16px;
+  box-shadow: 4px 4px 0px #1D2D44;
+  transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.theme-muffin_party .party-pop-btn:hover {
+  background: #F72585;
+  transform: translateY(-3px) rotate(1deg);
+  box-shadow: 6px 6px 0px #2BAE66;
+}
+
+.theme-muffin_party .party-pop-btn:active {
+  transform: translateY(3px) scale(0.95);
+  box-shadow: 1px 1px 0px #1D2D44;
+  background: #00BBF9;
+}
+
+.theme-muffin_oasis {
+  --color-brand-cream: #FFF5F7; /* Fresh pink cream background */
+  --color-brand-sugar: #FFFFFF; /* Glossy card surface */
+  --color-brand-caramel: #FF6B6B; /* Fresh pink main 🍰 */
+  --color-brand-honey: #FFE66D; /* Sunshine yellow */
+  --color-brand-gold: #4ECDC4; /* Minty green */
+  --color-brand-chocolate: #2D3748; /* Clean trendy dark text */
+  --color-brand-marshmallow: #F0F0F0; /* Creamy white container */
+  --color-brand-glaze: rgba(255, 107, 107, 0.22);
+  font-family: 'Lato', var(--font-sans);
+}
+
+.theme-muffin_oasis h1,
+.theme-muffin_oasis h2,
+.theme-muffin_oasis h3,
+.theme-muffin_oasis .font-bold,
+.theme-muffin_oasis .font-black {
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Glossy card, hover-lift, sprinkle confetti & glossy button animations for Muffin Oasis */
+@keyframes sprinkle-bounce {
+  0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+  50% { transform: translateY(-10px) scale(1.2) rotate(18deg); }
+}
+
+@keyframes hero-fade-in {
+  0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.theme-muffin_oasis .hero-image-animate {
+  animation: hero-fade-in 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.theme-muffin_oasis .glossy-card {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 30px -10px rgba(255, 107, 107, 0.25), 0 0 15px rgba(78, 205, 196, 0.15);
+  border: 1px solid rgba(255, 107, 107, 0.2);
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-muffin_oasis .glossy-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px -10px rgba(255, 107, 107, 0.4), 0 0 25px rgba(78, 205, 196, 0.3);
+  border-color: #FF6B6B;
+}
+
+.theme-muffin_oasis .glossy-card:hover .confetti-sprinkle {
+  animation: sprinkle-bounce 0.6s ease-in-out infinite alternate;
+}
+
+.theme-muffin_oasis .glossy-btn {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.theme-muffin_oasis .glossy-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 10px 25px rgba(255, 107, 107, 0.5);
+}
+
+.theme-muffin_oasis .glossy-btn:active {
+  transform: translateY(1px) scale(0.97);
+}
+
+/* Midnight Muffins Theme 🌙🍪 */
+.theme-midnight_muffins {
+  --color-brand-cream: #1A252F; /* Midnight dark backdrop */
+  --color-brand-sugar: #2C3E50; /* Deep midnight blue surface */
+  --color-brand-caramel: #E67E22; /* Warm orange muffin */
+  --color-brand-honey: #F4A261; /* Golden crumble */
+  --color-brand-gold: #E74C3C; /* Cherry red accent */
+  --color-brand-chocolate: #ECF0F1; /* Crisp light text */
+  --color-brand-marshmallow: #213140; /* Cozy slate container */
+  --color-brand-glaze: rgba(230, 126, 34, 0.25);
+  font-family: 'Lato', var(--font-sans);
+}
+
+/* Sprinkle Noir Theme ✨🖤 (Luxury Dark) */
+.theme-sprinkle_noir {
+  --color-brand-cream: #141423; /* Deepest dark navy canvas */
+  --color-brand-sugar: #1A1A2E; /* Deep dark blue card/surface */
+  --color-brand-caramel: #EAB543; /* Golden sprinkle ✨ */
+  --color-brand-honey: #EAB543; /* Golden sprinkle */
+  --color-brand-gold: #C4C4C4; /* Silver highlight */
+  --color-brand-chocolate: #F5F5F7; /* Crisp platinum light text */
+  --color-brand-marshmallow: #22223B; /* Luxe dark container */
+  --color-brand-glaze: rgba(234, 181, 67, 0.2);
+  font-family: 'Lato', var(--font-sans);
+}
+
+.theme-sprinkle_noir h1,
+.theme-sprinkle_noir h2,
+.theme-sprinkle_noir h3,
+.theme-sprinkle_noir .font-bold,
+.theme-sprinkle_noir .font-black {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Sprinkle Noir Keyframe Animations */
+@keyframes sprinkle-rain {
+  0% {
+    opacity: 0;
+    transform: translateY(-40px) scale(0.9);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(5px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes golden-particle-float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-12px) rotate(180deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 8px #EAB543);
+  }
+}
+
+@keyframes silver-flash-bounce {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(196, 196, 196, 0.9), 0 0 30px #C4C4C4;
+    background: #C4C4C4;
+    color: #1A1A2E;
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 35px 12px rgba(234, 181, 67, 0.8), 0 0 50px #EAB543;
+    background: #EAB543;
+    color: #11111E;
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 20px rgba(234, 181, 67, 0.4);
+    background: linear-gradient(135deg, #EAB543 0%, #E67E22 100%);
+    color: #11111E;
+  }
+}
+
+/* Sprinkle Noir Header = Dark gradient + subtle sparkles */
+.theme-sprinkle_noir .noir-header,
+.theme-sprinkle_noir header {
+  background: linear-gradient(135deg, #141423 0%, #1A1A2E 50%, #0F0F1D 100%);
+  border-bottom: 1px solid rgba(234, 181, 67, 0.25);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.theme-sprinkle_noir .noir-sparkle-text {
+  color: #EAB543;
+  text-shadow: 0 0 10px rgba(234, 181, 67, 0.6), 0 0 20px rgba(196, 196, 196, 0.3);
+}
+
+/* Sprinkle Rain Page Load */
+.theme-sprinkle_noir .hero-image-container,
+.theme-sprinkle_noir .sprinkle-rain-animate {
+  animation: sprinkle-rain 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.theme-sprinkle_noir .golden-particle {
+  animation: golden-particle-float 3s ease-in-out infinite;
+}
+
+/* Sprinkle Noir Muffin Cards */
+.theme-sprinkle_noir .party-3d-card,
+.theme-sprinkle_noir .glossy-card,
+.theme-sprinkle_noir .noir-muffin-card {
+  background: #1A1A2E;
+  border: 1px solid rgba(234, 181, 67, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.7), 0 0 15px rgba(196, 196, 196, 0.1);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-sprinkle_noir .party-3d-card::before,
+.theme-sprinkle_noir .glossy-card::before,
+.theme-sprinkle_noir .noir-muffin-card::before {
+  content: '✨ 🎉 ✨';
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 14px;
+  opacity: 0;
+  transform: translateY(10px) scale(0.8);
+  transition: all 0.35s ease;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.theme-sprinkle_noir .party-3d-card:hover,
+.theme-sprinkle_noir .glossy-card:hover,
+.theme-sprinkle_noir .noir-muffin-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  border-color: #EAB543;
+  box-shadow: 0 22px 40px -12px rgba(0, 0, 0, 0.8), 0 0 25px rgba(234, 181, 67, 0.5), 0 0 15px rgba(196, 196, 196, 0.3);
+}
+
+.theme-sprinkle_noir .party-3d-card:hover::before,
+.theme-sprinkle_noir .glossy-card:hover::before,
+.theme-sprinkle_noir .noir-muffin-card:hover::before {
+  opacity: 1;
+  transform: translateY(0) scale(1.2);
+}
+
+/* Sprinkle Noir Buttons */
+.theme-sprinkle_noir .party-pop-btn,
+.theme-sprinkle_noir .glossy-btn,
+.theme-sprinkle_noir .noir-flash-btn,
+.theme-sprinkle_noir button.bg-brand-caramel {
+  background: linear-gradient(135deg, #EAB543 0%, #E67E22 100%);
+  color: #11111E;
+  font-weight: 800;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(234, 181, 67, 0.35);
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-sprinkle_noir .party-pop-btn:hover,
+.theme-sprinkle_noir .glossy-btn:hover,
+.theme-sprinkle_noir .noir-flash-btn:hover,
+.theme-sprinkle_noir button.bg-brand-caramel:hover {
+  box-shadow: 0 8px 25px rgba(234, 181, 67, 0.6), 0 0 20px rgba(196, 196, 196, 0.5);
+  transform: translateY(-3px);
+}
+
+.theme-sprinkle_noir .party-pop-btn:active,
+.theme-sprinkle_noir .glossy-btn:active,
+.theme-sprinkle_noir .noir-flash-btn:active,
+.theme-sprinkle_noir button.bg-brand-caramel:active {
+  animation: silver-flash-bounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.theme-midnight_muffins h1,
+.theme-midnight_muffins h2,
+.theme-midnight_muffins h3,
+.theme-midnight_muffins .font-bold,
+.theme-midnight_muffins .font-black {
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Midnight Animations & Keyframe FX */
+
+/* 1. Moon & Header Atmospheric Glow Pulse */
+@keyframes midnight-moon-pulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(230, 126, 34, 0.2), inset 0 0 20px rgba(244, 162, 97, 0.1);
+    border-color: rgba(230, 126, 34, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(230, 126, 34, 0.5), inset 0 0 35px rgba(244, 162, 97, 0.25);
+    border-color: rgba(244, 162, 97, 0.6);
+  }
+}
+
+/* 2. Twinkling Night Stars Animation */
+@keyframes midnight-twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.25); filter: drop-shadow(0 0 6px #F4A261); }
+}
+
+.midnight-star {
+  animation: midnight-twinkle 2.5s infinite ease-in-out;
+}
+
+/* 3. Muffin Steam Rising Animation */
+@keyframes midnight-steam-float {
+  0% { opacity: 0; transform: translateY(0) scaleX(0.8); }
+  50% { opacity: 0.6; transform: translateY(-12px) scaleX(1.1); }
+  100% { opacity: 0; transform: translateY(-25px) scaleX(1.3); }
+}
+
+.midnight-steam {
+  animation: midnight-steam-float 3s infinite ease-out;
+}
+
+/* 4. Page Load Fade-In with Dark Overlay Glide */
+@keyframes midnight-page-fade {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+    filter: brightness(0.7);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+}
+
+.midnight-card-fade,
+.theme-midnight_muffins .party-3d-card,
+.theme-midnight_muffins .glossy-card {
+  animation: midnight-page-fade 0.7s cubic-bezier(0.16, 1, 0.3, 1) ease-out forwards;
+}
+
+/* 5. Button Neon Flash Animation */
+@keyframes neon-flash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.9), 0 0 35px #E74C3C;
+    background: #E74C3C;
+    transform: scale(0.95);
+  }
+  50% {
+    box-shadow: 0 0 40px 15px rgba(244, 162, 97, 0.9), 0 0 60px #F4A261;
+    background: #F4A261;
+    transform: scale(0.98);
+  }
+  100% {
+    box-shadow: 0 4px 15px rgba(230, 126, 34, 0.4);
+    background: linear-gradient(135deg, #E67E22 0%, #F4A261 100%);
+    transform: scale(1);
+  }
+}
+
+/* Theme Midnight Specific Component Rules */
+.theme-midnight_muffins .midnight-header,
+.theme-midnight_muffins header {
+  background: linear-gradient(135deg, #1A252F 0%, #2C3E50 60%, #1c2833 100%);
+  border-bottom: 1px solid rgba(230, 126, 34, 0.25);
+  animation: midnight-moon-pulse 6s infinite ease-in-out;
+}
+
+.theme-midnight_muffins .midnight-glow-text {
+  color: #F4A261;
+  text-shadow: 0 0 12px rgba(244, 162, 97, 0.6), 0 0 24px rgba(230, 126, 34, 0.4);
+}
+
+/* Muffin Card Lift & Neon Glow Effects */
+.theme-midnight_muffins .party-3d-card,
+.theme-midnight_muffins .glossy-card,
+.theme-midnight_muffins .midnight-muffin-card {
+  background: #2C3E50;
+  border: 1px solid rgba(244, 162, 97, 0.25);
+  border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(230, 126, 34, 0.15);
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.theme-midnight_muffins .party-3d-card:hover,
+.theme-midnight_muffins .glossy-card:hover,
+.theme-midnight_muffins .midnight-muffin-card:hover {
+  transform: translateY(-8px) scale(1.025);
+  box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(230, 126, 34, 0.55), 0 0 50px rgba(244, 162, 97, 0.35);
+  border-color: #E67E22;
+}
+
+/* Neon Flash Buttons */
+.theme-midnight_muffins .party-pop-btn,
+.theme-midnight_muffins .glossy-btn,
+.theme-midnight_muffins .midnight-flash-btn,
+.theme-midnight_muffins button.bg-brand-caramel {
+  background: linear-gradient(135deg, #E67E22 0%, #F4A261 100%);
+  color: #FFFFFF;
+  font-weight: 700;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(230, 126, 34, 0.4);
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-midnight_muffins .party-pop-btn:hover,
+.theme-midnight_muffins .glossy-btn:hover,
+.theme-midnight_muffins .midnight-flash-btn:hover,
+.theme-midnight_muffins button.bg-brand-caramel:hover {
+  box-shadow: 0 6px 20px rgba(230, 126, 34, 0.7), 0 0 20px rgba(244, 162, 97, 0.6);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.theme-midnight_muffins .party-pop-btn:active,
+.theme-midnight_muffins .glossy-btn:active,
+.theme-midnight_muffins .midnight-flash-btn:active,
+.theme-midnight_muffins button.bg-brand-caramel:active {
+  animation: neon-flash 0.35s ease-out forwards;
+}
+
+/* Cosmic Galaxy Keyframe Animations */
+@keyframes galaxy-pulse {
+  0% { filter: drop-shadow(0 0 12px rgba(244, 162, 97, 0.4)) brightness(1); }
+  50% { filter: drop-shadow(0 0 25px rgba(231, 111, 81, 0.8)) brightness(1.2); }
+  100% { filter: drop-shadow(0 0 12px rgba(244, 162, 97, 0.4)) brightness(1); }
+}
+
+@keyframes cosmic-orbit {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.05); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes stardust-glow {
+  0%, 100% { opacity: 0.3; transform: scale(0.9); }
+  50% { opacity: 0.95; transform: scale(1.15); }
+}
+
+.theme-muffin_galaxy svg {
+  animation: galaxy-pulse 4s ease-in-out infinite;
+}
+
+.cosmic-orbit-ring {
+  animation: cosmic-orbit 25s linear infinite;
+}
+
+.stardust-particle {
+  animation: stardust-glow 3s ease-in-out infinite;
+}
+
+/* Glitter / Shine effects for Golden Sprinkle pastries */
+@keyframes gold-shimmer {
+  0% { filter: drop-shadow(0 0 2px rgba(212, 175, 55, 0.4)) brightness(1); }
+  50% { filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.85)) brightness(1.15) saturate(1.1); }
+  100% { filter: drop-shadow(0 0 2px rgba(212, 175, 55, 0.4)) brightness(1); }
+}
+
+.theme-golden_sprinkle svg {
+  animation: gold-shimmer 3s ease-in-out infinite;
+}
+
+/* Print styles for Kitchen Receipt POS view */
+@keyframes receiptFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media print {
+  body > * {
+    visibility: hidden !important;
+  }
+  
+  #printable-kitchen-receipt,
+  #printable-kitchen-receipt * {
+    visibility: visible !important;
+  }
+
+  #printable-kitchen-receipt {
+    display: block !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 80mm !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 16px !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    font-family: 'Courier New', Courier, monospace !important;
+    box-shadow: none !important;
+    border: none !important;
+    animation: receiptFadeIn 0.3s ease-out forwards !important;
+  }
+
+  @page {
+    size: auto;
+    margin: 0mm;
+  }
+}
+

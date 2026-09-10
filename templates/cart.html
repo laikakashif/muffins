@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart • Muffinns Confectionery</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-amber-50/30 text-stone-800 min-h-screen antialiased flex flex-col font-sans">
+
+  <!-- TOP ANNOUNCEMENT BAR -->
+  <div class="bg-stone-900 text-stone-300 text-xs py-2 px-4 border-b border-stone-800">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <span>✨ Fresh daily oven drops • 100% Handcrafted Artisanal Bakes</span>
+      <div class="flex items-center gap-4 text-[11px]">
+        <a href="/" class="hover:text-white flex items-center gap-1 font-semibold text-stone-400 hover:text-stone-100">
+          ← Back to Shop
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN HEADER -->
+  <header class="bg-white border-b border-amber-200/60 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <a href="/" class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white shadow-md shadow-orange-500/20 text-2xl font-black">
+          M
+        </a>
+        <div>
+          <a href="/" class="text-xl sm:text-2xl font-black text-stone-900 tracking-tight hover:text-orange-600 transition">Muffinns</a>
+          <p class="text-xs text-stone-500 font-medium -mt-0.5">Artisanal Bakery & Patashay</p>
+        </div>
+      </div>
+
+      <nav class="flex items-center gap-3">
+        <a href="/#catalog" class="text-xs sm:text-sm font-semibold text-stone-700 hover:text-orange-600 transition px-3 py-1.5 rounded-lg hover:bg-orange-50">
+          Catalog
+        </a>
+        <a href="/cart" class="relative text-xs font-bold px-3 py-2 rounded-xl bg-orange-500 text-white shadow-sm shadow-orange-500/20 transition flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+          <span>Cart</span>
+          <span id="navCartCount" class="ml-1 bg-white text-orange-600 text-[11px] font-black px-1.5 py-0.2 rounded-full">{{ cart_count or 0 }}</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- CART VIEW -->
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 flex-1 w-full space-y-6">
+
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-stone-200">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">Your Bakery Cart</h1>
+        <p class="text-sm text-stone-500 mt-0.5">Review items in your order, adjust quantities, and checkout.</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="/#catalog" class="px-3.5 py-2 text-xs font-bold rounded-xl border border-stone-300 text-stone-700 hover:bg-stone-50 transition">
+          + Add More Items
+        </a>
+        <button type="button" onclick="clearEntireCart()" id="clearCartBtn" class="px-3.5 py-2 text-xs font-semibold rounded-xl text-rose-600 hover:bg-rose-50 border border-rose-200 transition">
+          Clear Cart
+        </button>
+      </div>
+    </div>
+
+    <!-- EMPTY CART STATE -->
+    <div id="emptyCartView" class="{% if cart and cart|length > 0 %}hidden{% endif %} text-center py-16 sm:py-24 bg-white rounded-3xl border border-dashed border-stone-300 p-8 space-y-4">
+      <div class="w-20 h-20 mx-auto rounded-3xl bg-amber-100 flex items-center justify-center text-4xl shadow-inner">
+        🛒
+      </div>
+      <div class="space-y-1">
+        <h3 class="text-xl font-black text-stone-800">Your cart is currently empty</h3>
+        <p class="text-sm text-stone-500 max-w-md mx-auto">
+          Explore our fresh cakes, sweets, and savories oven collection to add treats to your cart.
+        </p>
+      </div>
+      <a href="/#catalog" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm shadow-md shadow-orange-500/20 transition">
+        Browse Fresh Bakery Catalog →
+      </a>
+    </div>
+
+    <!-- ACTIVE CART CONTENT (ITEMS & SUMMARY) -->
+    <div id="activeCartView" class="{% if not cart or cart|length == 0 %}hidden{% endif %} grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+      <!-- ITEMS LIST -->
+      <div class="lg:col-span-8 space-y-3">
+        <div id="cartItemsList" class="space-y-3">
+          {% if cart %}
+            {% for pid, item in cart.items() %}
+              <div class="cart-item-row bg-white rounded-2xl border border-stone-200/80 shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 transition hover:border-orange-200" data-id="{{ pid }}">
+                <div class="flex items-center gap-4 w-full sm:w-auto">
+                  <div class="w-20 h-20 rounded-xl bg-stone-100 overflow-hidden flex-shrink-0 relative border border-stone-200/60">
+                    {% if item.image_url %}
+                      <img src="{{ item.image_url }}" alt="{{ item.name }}" class="w-full h-full object-cover" onerror="this.src='/assets/placeholder-food.png'; this.onerror=null;" />
+                    {% else %}
+                      <div class="w-full h-full flex items-center justify-center text-2xl">🍰</div>
+                    {% endif %}
+                  </div>
+                  <div class="space-y-1">
+                    {% if item.category %}
+                      <span class="text-[10px] font-bold tracking-wider uppercase text-orange-600 bg-orange-50 px-2 py-0.5 rounded-md">{{ item.category }}</span>
+                    {% endif %}
+                    <h3 class="font-bold text-stone-900 text-base leading-snug">{{ item.name }}</h3>
+                    <p class="text-xs text-stone-500">Unit Price: <span class="font-semibold text-stone-800">Rs {{ item.price }}</span></p>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto pt-3 sm:pt-0 border-t sm:border-t-0 border-stone-100">
+                  <!-- QUANTITY STEPPER -->
+                  <div class="flex items-center border border-stone-200 rounded-xl bg-stone-50 p-1 shadow-inner">
+                    <button type="button" onclick="updateItemQuantity('{{ pid }}', -1)" class="w-7 h-7 rounded-lg bg-white border border-stone-200 text-stone-700 font-bold hover:bg-stone-100 flex items-center justify-center text-sm transition">
+                      -
+                    </button>
+                    <span class="w-9 text-center text-xs font-bold text-stone-900">{{ item.qty or item.quantity or 1 }}</span>
+                    <button type="button" onclick="updateItemQuantity('{{ pid }}', 1)" class="w-7 h-7 rounded-lg bg-white border border-stone-200 text-stone-700 font-bold hover:bg-stone-100 flex items-center justify-center text-sm transition">
+                      +
+                    </button>
+                  </div>
+
+                  <!-- TOTAL PRICE -->
+                  <div class="text-right min-w-[90px]">
+                    <span class="text-xs text-stone-400 block sm:hidden">Item Total</span>
+                    <span class="text-base font-black text-stone-900 font-mono">Rs {{ (item.price or 0) * (item.qty or item.quantity or 1) }}</span>
+                  </div>
+
+                  <!-- REMOVE BUTTON -->
+                  <button type="button" onclick="removeItemFromCart('{{ pid }}')" class="text-stone-400 hover:text-rose-600 p-2 rounded-lg hover:bg-rose-50 transition" title="Remove item">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  </button>
+                </div>
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- ORDER SUMMARY -->
+      <div class="lg:col-span-4 bg-white rounded-3xl border border-amber-200/80 shadow-sm p-6 space-y-6 sticky top-24">
+        <h2 class="text-lg font-black text-stone-900 border-b border-stone-100 pb-3">
+          Order Summary
+        </h2>
+
+        <div class="space-y-3 text-sm">
+          <div class="flex items-center justify-between text-stone-600">
+            <span>Items Subtotal:</span>
+            <span id="summarySubtotal" class="font-bold text-stone-900 font-mono">Rs {{ subtotal or 0 }}</span>
+          </div>
+
+          <div class="flex items-center justify-between text-stone-600">
+            <span>Delivery Fee:</span>
+            <span class="font-bold text-emerald-600">Free Standard</span>
+          </div>
+
+          <div class="border-t border-stone-200 pt-3 flex items-center justify-between">
+            <span class="font-black text-stone-900 text-base">Estimated Total:</span>
+            <span id="summaryTotal" class="font-black text-xl text-orange-600 font-mono">Rs {{ total or subtotal or 0 }}</span>
+          </div>
+        </div>
+
+        <div class="space-y-2.5">
+          <!-- PROCEED TO CHECKOUT -->
+          <a href="/checkout" id="proceedCheckoutBtn" class="w-full py-3.5 px-4 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm shadow-md shadow-orange-500/25 transition flex items-center justify-center gap-2">
+            <span>Proceed to Checkout</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </a>
+
+          <!-- ORDER VIA WHATSAPP BUTTON -->
+          <button type="button" onclick="orderViaWhatsApp()" class="w-full py-3 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition flex items-center justify-center gap-2">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+            <span>Order Direct on WhatsApp</span>
+          </button>
+        </div>
+
+        <div class="p-3.5 bg-amber-50/70 rounded-2xl border border-amber-200/60 text-xs text-stone-600 space-y-1">
+          <p class="font-bold text-stone-800">🚚 Bahawalpur Fresh Delivery</p>
+          <p class="text-[11px] text-stone-500 leading-relaxed">
+            Payment is collected upon delivery (Cash on Delivery). Each box is baked fresh.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    const CART_STORAGE_KEY = 'muffinns_cart';
+    const WHATSAPP_NUM = "{{ whatsapp_number or '923017778181' }}";
+
+    function getLocalCart() {
+      try {
+        const raw = localStorage.getItem(CART_STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveLocalCart(cart) {
+      try {
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+      } catch (e) {}
+    }
+
+    async function updateItemQuantity(pid, delta) {
+      try {
+        const res = await fetch(`/cart/update/${encodeURIComponent(pid)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ delta })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          window.location.reload();
+        } else {
+          // Fallback to client-side localStorage update
+          fallbackLocalUpdate(pid, delta);
+        }
+      } catch (err) {
+        fallbackLocalUpdate(pid, delta);
+      }
+    }
+
+    async function removeItemFromCart(pid) {
+      try {
+        const res = await fetch(`/cart/remove/${encodeURIComponent(pid)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (res.ok) {
+          // Also remove from local storage
+          const local = getLocalCart().filter(item => (item.id || item.product_id) !== pid);
+          saveLocalCart(local);
+          window.location.reload();
+        } else {
+          fallbackLocalRemove(pid);
+        }
+      } catch (err) {
+        fallbackLocalRemove(pid);
+      }
+    }
+
+    async function clearEntireCart() {
+      if (!confirm('Are you sure you want to clear all items from your cart?')) return;
+      try {
+        await fetch('/cart/clear', { method: 'POST' });
+      } catch (e) {}
+      saveLocalCart([]);
+      window.location.reload();
+    }
+
+    function fallbackLocalUpdate(pid, delta) {
+      const cart = getLocalCart();
+      const idx = cart.findIndex(it => (it.id || it.product_id) === pid);
+      if (idx > -1) {
+        const newQty = (parseInt(cart[idx].quantity || cart[idx].qty) || 1) + delta;
+        if (newQty <= 0) {
+          cart.splice(idx, 1);
+        } else {
+          cart[idx].quantity = newQty;
+          cart[idx].qty = newQty;
+        }
+        saveLocalCart(cart);
+      }
+      window.location.reload();
+    }
+
+    function fallbackLocalRemove(pid) {
+      const cart = getLocalCart().filter(it => (it.id || it.product_id) !== pid);
+      saveLocalCart(cart);
+      window.location.reload();
+    }
+
+    function orderViaWhatsApp() {
+      // Build order text from items
+      const rows = document.querySelectorAll('.cart-item-row');
+      let msg = "Assalamu Alaikum Muffinns Bakery! I want to order from my cart:\n";
+      let total = document.getElementById('summaryTotal')?.innerText || '';
+
+      rows.forEach(r => {
+        const name = r.querySelector('h3')?.innerText || 'Item';
+        const qty = r.querySelector('.flex.items-center.border span')?.innerText || '1';
+        const price = r.querySelector('.font-mono.text-stone-900')?.innerText || '';
+        msg += `• ${qty}x ${name} (${price})\n`;
+      });
+
+      msg += `Estimated Total: ${total}\nPlease confirm delivery in Bahawalpur!`;
+      const url = `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    }
+
+    // Synchronize localStorage with server cart if server cart was empty
+    window.addEventListener('DOMContentLoaded', async () => {
+      const hasServerItems = document.querySelectorAll('.cart-item-row').length > 0;
+      const local = getLocalCart();
+
+      if (!hasServerItems && local.length > 0) {
+        // Hydrate server session from local storage!
+        for (const it of local) {
+          try {
+            await fetch(`/cart/add/${encodeURIComponent(it.id || it.product_id)}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name: it.name,
+                price: it.price,
+                quantity: it.quantity || it.qty || 1,
+                image_url: it.image_url || it.image,
+                category: it.category
+              })
+            });
+          } catch (e) {}
+        }
+        window.location.reload();
+      }
+    });
+  </script>
+
+</body>
+</html>

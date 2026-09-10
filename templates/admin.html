@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Muffinns Confectionery • Back-Office Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-amber-50/40 text-stone-800 min-h-screen antialiased flex flex-col font-sans">
+
+  <!-- TOP HEADER -->
+  <header class="bg-white border-b border-amber-200/60 shadow-sm sticky top-0 z-30">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <a href="/bwp-panel-7781" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white shadow-md shadow-orange-500/20 text-xl font-black hover:opacity-95 transition">
+          M
+        </a>
+        <div>
+          <h1 class="text-lg sm:text-xl font-bold text-stone-900 tracking-tight flex items-center gap-2">
+            Muffinns Bakery
+            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 border border-orange-200">
+              Admin Portal
+            </span>
+          </h1>
+          <p class="text-xs text-stone-500 hidden sm:block">Connected to Firebase Firestore & Admin SDK</p>
+        </div>
+      </div>
+
+      <!-- RIGHT ACTIONS & AUTH INFO -->
+      <div class="flex items-center flex-wrap gap-2 text-xs">
+        <span class="bg-stone-100 px-2.5 py-1.5 rounded-lg text-stone-700 font-medium flex items-center gap-1.5 border border-stone-200">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="hidden sm:inline">Admin:</span> <strong class="text-stone-900">{{ current_user }}</strong>
+        </span>
+
+        <a href="/" target="_blank" class="px-2.5 sm:px-3 py-1.5 rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-50 font-semibold transition flex items-center gap-1">
+          <span>Storefront</span>
+          <svg class="w-3 h-3 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        </a>
+
+        <a href="/bwp-panel-7781/add-admin" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-amber-100 text-amber-800 hover:bg-amber-200 font-semibold transition flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+          <span class="hidden sm:inline">Add Admin</span>
+        </a>
+
+        <!-- LOGOUT BUTTON -->
+        <a href="/bwp-panel-7781/logout" class="px-3 py-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 font-semibold border border-rose-200 transition flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          <span>Sign Out</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-1 w-full space-y-6">
+
+    <!-- FLASH NOTIFICATIONS -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="space-y-2">
+          {% for category, message in messages %}
+            <div class="p-4 rounded-xl border text-sm font-medium flex items-start gap-3 shadow-sm
+              {% if category == 'success' %} bg-emerald-50 border-emerald-200 text-emerald-800
+              {% elif category == 'danger' %} bg-rose-50 border-rose-200 text-rose-800
+              {% else %} bg-amber-50 border-amber-200 text-amber-800 {% endif %}">
+              <span class="text-base">
+                {% if category == 'success' %}✓{% elif category == 'danger' %}✕{% else %}ℹ{% endif %}
+              </span>
+              <div class="flex-1">{{ message }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- PRIMARY DASHBOARD TABS (TAB 1: PRODUCTS CRUD, TAB 2: ORDERS LIST) -->
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 pb-3">
+      <div class="flex items-center gap-2">
+        <button 
+          id="mainTabProductsBtn" 
+          type="button"
+          onclick="switchMainTab('products')"
+          class="px-5 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2 shadow-xs
+            {% if active_tab != 'orders' %} bg-stone-900 text-white {% else %} bg-white text-stone-700 hover:bg-stone-100 border border-stone-300 {% endif %}"
+        >
+          <span>🍰 Products CRUD</span>
+          <span class="bg-white/20 text-xs px-2 py-0.5 rounded-full font-mono">{{ products|length }}</span>
+        </button>
+
+        <button 
+          id="mainTabOrdersBtn" 
+          type="button"
+          onclick="switchMainTab('orders')"
+          class="px-5 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2 shadow-xs
+            {% if active_tab == 'orders' %} bg-orange-600 text-white {% else %} bg-white text-stone-700 hover:bg-stone-100 border border-stone-300 {% endif %}"
+        >
+          <span>📦 Orders List</span>
+          <span id="tabOrderCountBadge" class="bg-orange-100 text-orange-900 text-xs px-2 py-0.5 rounded-full font-mono font-bold">{{ orders|length }}</span>
+        </button>
+      </div>
+
+      <div class="text-xs text-stone-500 font-mono bg-white px-3 py-1.5 rounded-xl border border-stone-200">
+        Active Section: <strong id="activeSectionLabel" class="text-stone-800 font-bold">{% if active_tab == 'orders' %}Orders Management{% else %}Products Catalog{% endif %}</strong>
+      </div>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- TAB 1: PRODUCTS CRUD SECTION -->
+    <!-- ========================================================================= -->
+    <div id="mainProductsSection" class="space-y-6 {% if active_tab == 'orders' %}hidden{% endif %}">
+
+      <!-- SUB-TAB SWITCHER: EDIT / ADD -->
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <button 
+            id="tabEditBtn" 
+            type="button"
+            onclick="switchProductSubTab('edit')"
+            class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-orange-500 text-white shadow-sm transition"
+          >
+            ✏️ Edit Product
+          </button>
+          <button 
+            id="tabAddBtn" 
+            type="button"
+            onclick="switchProductSubTab('add')"
+            class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white text-stone-600 border border-stone-300 hover:bg-stone-50 transition"
+          >
+            ➕ Add New Product
+          </button>
+        </div>
+
+        <div class="text-xs text-stone-500 font-mono bg-white px-3 py-1.5 rounded-xl border border-stone-200">
+          Products in Catalog: <strong class="text-stone-800">{{ products|length }}</strong>
+        </div>
+      </div>
+
+      <!-- 1. EDIT PRODUCT SECTION -->
+      <div id="sectionEdit" class="bg-white rounded-2xl shadow-sm border border-stone-200/80 overflow-hidden">
+        <div class="px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-stone-900">Edit Bakery Product</h2>
+            <p class="text-xs text-stone-500">Select product ID to auto-fill current fields. Updates save to Firebase Firestore.</p>
+          </div>
+          <span class="text-xs px-2.5 py-1 rounded bg-amber-100 text-amber-900 font-medium">
+            Live Firebase Sync
+          </span>
+        </div>
+
+        <div class="p-5 sm:p-8">
+          <form method="POST" action="/bwp-panel-7781" id="editProductForm" enctype="multipart/form-data" class="space-y-6">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+            <!-- 1. PRODUCT ID DROPDOWN -->
+            <div>
+              <label for="product_select" class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5 flex items-center justify-between">
+                <span>1. Select Product ID from Firebase:</span>
+                <span class="text-[11px] font-normal text-stone-400">Auto-fills fields</span>
+              </label>
+              
+              <div class="relative">
+                <select 
+                  id="product_select" 
+                  name="product_id"
+                  class="w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-stone-900 font-semibold shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none transition appearance-none cursor-pointer text-sm"
+                  onchange="handleProductChange(this.value)"
+                >
+                  {% if not products %}
+                    <option value="" disabled selected>No products found in /products collection</option>
+                  {% else %}
+                    <option value="" disabled {% if not selected_id %}selected{% endif %}>-- Select a Product --</option>
+                    {% for pid, pdata in products.items() %}
+                      <option value="{{ pid }}" {% if pid == selected_id %}selected{% endif %}>
+                        {{ pid }} — {{ pdata.name }} ({{ pdata.category }} • Rs {{ pdata.price }})
+                      </option>
+                    {% endfor %}
+                  {% endif %}
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-stone-500">
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+              <!-- LEFT: FORM INPUTS (7 cols) -->
+              <div class="lg:col-span-7 space-y-4">
+                
+                <div>
+                  <label for="input_name" class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">
+                    Product Name *
+                  </label>
+                  <input 
+                    type="text" 
+                    id="input_name" 
+                    name="name" 
+                    required 
+                    class="w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-stone-900 text-sm shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none transition font-medium"
+                    oninput="checkModifications()"
+                  />
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label for="input_price" class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">
+                      Price (PKR) *
+                    </label>
+                    <div class="relative">
+                      <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-xs font-bold text-stone-400">Rs</span>
+                      <input 
+                        type="text" 
+                        id="input_price" 
+                        name="price" 
+                        required 
+                        class="w-full rounded-xl border border-stone-300 bg-white pl-10 pr-4 py-2.5 text-stone-900 text-sm shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none transition font-bold"
+                        oninput="checkModifications()"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label for="input_category" class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">
+                      Category *
+                    </label>
+                    <select 
+                      id="input_category" 
+                      name="category" 
+                      class="w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5 text-stone-900 text-sm shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none transition"
+                      onchange="checkModifications()"
+                    >
+                      <option value="Cakes">Cakes</option>
+                      <option value="Traditional Sweets">Traditional Sweets (Mithai)</option>
+                      <option value="Savories & Snacks">Savories & Snacks</option>
+                      <option value="Breads & Rusks">Breads & Rusks</option>
+                      <option value="Beverages & Shakes">Beverages & Shakes</option>
+                      <option value="Biscuits & Cookies">Biscuits & Cookies</option>
+                      <option value="General">General Bakery</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label for="input_desc" class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">
+                    Description
+                  </label>
+                  <textarea 
+                    id="input_desc" 
+                    name="description" 
+                    rows="3" 
+                    class="w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-stone-900 text-xs sm:text-sm shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none transition"
+                    oninput="checkModifications()"
+                  ></textarea>
+                </div>
+
+                <!-- IMAGE URL -->
+                <div>
+                  <label for="input_image_url" class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">
+                    Product Image URL
+                  </label>
+                  <input 
+                    type="text" 
+                    id="input_image_url" 
+                    name="image_url" 
+                    placeholder="https://i.ibb.co/... or https://..." 
+                    class="w-full rounded-xl border border-stone-300 bg-white px-4 py-2 text-stone-900 font-mono text-xs shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none transition"
+                    oninput="updateImagePreview(); checkModifications();"
+                  />
+                </div>
+
+                <!-- IMGBB / STORAGE IMAGE UPLOAD -->
+                <div class="p-3.5 rounded-xl bg-orange-50/70 border border-orange-200/80">
+                  <label class="block text-xs font-bold text-orange-950 mb-1 flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    <span>Upload Image (ImgBB / Cloud Storage):</span>
+                  </label>
+                  <input 
+                    type="file" 
+                    name="image_file" 
+                    accept="image/*"
+                    class="block w-full text-xs text-stone-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-orange-500 file:text-white hover:file:bg-orange-600 file:cursor-pointer"
+                    onchange="handleLocalFilePreview(event)"
+                  />
+                  <p class="text-[10px] text-stone-500 mt-1">Uploads with ImgBB API & syncs to Firebase.</p>
+                </div>
+
+              </div>
+
+              <!-- RIGHT: PREVIEW CARD (5 cols) -->
+              <div class="lg:col-span-5 flex flex-col justify-between space-y-4">
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">
+                    Live Photo Preview
+                  </label>
+
+                  <div class="w-full h-56 rounded-2xl border-2 border-dashed border-stone-300 bg-stone-50 p-3 flex flex-col items-center justify-center text-center overflow-hidden relative shadow-inner">
+                    <img 
+                      id="previewImg" 
+                      src="" 
+                      alt="Preview" 
+                      class="max-h-full max-w-full object-contain rounded-xl shadow-sm hidden"
+                      onload="this.classList.remove('hidden'); document.getElementById('previewPlaceholder').classList.add('hidden'); document.getElementById('previewError').classList.add('hidden');"
+                      onerror="this.classList.add('hidden'); document.getElementById('previewPlaceholder').classList.add('hidden'); document.getElementById('previewError').classList.remove('hidden');"
+                    />
+
+                    <div id="previewPlaceholder" class="flex flex-col items-center text-stone-400">
+                      <span class="text-4xl mb-1">🧁</span>
+                      <span class="text-xs font-medium">Select a product to view photo</span>
+                    </div>
+
+                    <div id="previewError" class="flex flex-col items-center text-rose-500 hidden">
+                      <span class="text-xs font-semibold">Image could not load</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-3 rounded-xl bg-stone-100 text-stone-600 text-xs space-y-1">
+                  <span class="font-bold text-stone-800">⚡ Direct Firebase Update:</span>
+                  <p class="text-[11px] leading-relaxed">
+                    Only edited fields are sent to Firestore. Preserves untouched fields. Updates instantly on the homepage.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- ACTIONS: UPDATE & DELETE BUTTONS -->
+            <div class="pt-6 border-t border-stone-100 flex flex-wrap items-center justify-between gap-3">
+              <div id="diffSummary" class="text-xs font-medium text-stone-500">
+                No modifications yet.
+              </div>
+
+              <div class="flex items-center gap-3">
+                <button 
+                  type="button" 
+                  onclick="handleDeleteCurrentProduct()"
+                  class="px-4 py-2.5 rounded-xl border border-rose-200 text-rose-700 bg-rose-50 hover:bg-rose-100 text-xs sm:text-sm font-semibold transition flex items-center gap-1.5"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  <span>Delete</span>
+                </button>
+
+                <button 
+                  type="submit" 
+                  id="submitBtn"
+                  class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-orange-500/20 transition flex items-center gap-2"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                  <span>Update Product</span>
+                </button>
+              </div>
+            </div>
+
+          </form>
+
+          <!-- HIDDEN DELETE FORM -->
+          <form id="deleteForm" method="POST" action="" class="hidden">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          </form>
+        </div>
+      </div>
+
+      <!-- 2. ADD PRODUCT SECTION -->
+      <div id="sectionAdd" class="bg-white rounded-2xl shadow-sm border border-stone-200/80 overflow-hidden hidden">
+        <div class="px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between">
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-stone-900">Add New Bakery Product</h2>
+            <p class="text-xs text-stone-500">Adds document to Firebase <code class="font-mono text-orange-600">/products</code> collection.</p>
+          </div>
+          <span class="text-xs px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 font-semibold">
+            Instant Live Sync
+          </span>
+        </div>
+
+        <div class="p-5 sm:p-8">
+          <form method="POST" action="/bwp-panel-7781/products/add" enctype="multipart/form-data" class="space-y-5">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+              <div>
+                <label for="add_id" class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">
+                  Product ID (optional)
+                </label>
+                <input 
+                  type="text" 
+                  id="add_id" 
+                  name="product_id" 
+                  placeholder="e.g. lotus-cake (or leave blank for auto)" 
+                  class="w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-stone-900 font-mono text-xs shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none transition"
+                />
+              </div>
+
+              <div>
+                <label for="add_name" class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">
+                  Product Name *
+                </label>
+                <input 
+                  type="text" 
+                  id="add_name" 
+                  name="name" 
+                  required 
+                  placeholder="e.g. Lotus Biscoff Special Cake" 
+                  class="w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-stone-900 text-sm shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none transition font-medium"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+              <div>
+                <label for="add_price" class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">
+                  Price (PKR) *
+                </label>
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-xs font-bold text-stone-400">Rs</span>
+                  <input 
+                    type="number" 
+                    id="add_price" 
+                    name="price" 
+                    required 
+                    min="0"
+                    placeholder="1800" 
+                    class="w-full rounded-xl border border-stone-300 bg-white pl-10 pr-4 py-2.5 text-stone-900 text-sm shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none transition font-bold"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label for="add_category" class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">
+                  Category *
+                </label>
+                <select 
+                  id="add_category" 
+                  name="category" 
+                  class="w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5 text-stone-900 text-sm shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none transition"
+                >
+                  <option value="Cakes">Cakes</option>
+                  <option value="Traditional Sweets">Traditional Sweets (Mithai)</option>
+                  <option value="Savories & Snacks">Savories & Snacks</option>
+                  <option value="Breads & Rusks">Breads & Rusks</option>
+                  <option value="Beverages & Shakes">Beverages & Shakes</option>
+                  <option value="Biscuits & Cookies">Biscuits & Cookies</option>
+                  <option value="General">General Bakery</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label for="add_desc" class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">
+                Description
+              </label>
+              <textarea 
+                id="add_desc" 
+                name="description" 
+                rows="2" 
+                placeholder="Delicious handcrafted freshly baked item with premium ingredients..." 
+                class="w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-stone-900 text-xs sm:text-sm shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none transition"
+              ></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label for="add_image_url" class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">
+                  Image Direct URL (optional)
+                </label>
+                <input 
+                  type="text" 
+                  id="add_image_url" 
+                  name="image_url" 
+                  placeholder="https://i.ibb.co/..." 
+                  class="w-full rounded-xl border border-stone-300 bg-white px-4 py-2 text-stone-900 font-mono text-xs shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none transition"
+                />
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">
+                  Or Upload Image (ImgBB / Cloud Storage)
+                </label>
+                <input 
+                  type="file" 
+                  name="image_file" 
+                  accept="image/*"
+                  class="block w-full text-xs text-stone-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 file:cursor-pointer"
+                />
+              </div>
+            </div>
+
+            <div class="pt-4 flex justify-end">
+              <button 
+                type="submit" 
+                class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-500/20 transition flex items-center gap-2"
+              >
+                <span>Add Product to Firestore</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- TAB 2: ORDERS MANAGEMENT LIST (NEWEST FIRST) -->
+    <!-- ========================================================================= -->
+    <div id="mainOrdersSection" class="space-y-6 {% if active_tab != 'orders' %}hidden{% endif %}">
+
+      <!-- ORDERS TOP BAR WITH WORKING REFRESH BUTTON -->
+      <div class="bg-white rounded-2xl border border-stone-200/80 p-5 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2.5">
+            <h2 class="text-lg font-black text-stone-900">Customer Orders List</h2>
+            <span id="orderHeaderCountBadge" class="bg-orange-100 text-orange-900 text-xs font-mono font-bold px-2.5 py-0.5 rounded-full">
+              {{ orders|length }} Orders
+            </span>
+          </div>
+          <p class="text-xs text-stone-500 mt-1">
+            Real-time orders stored in Firestore collection <code class="font-mono text-stone-700 bg-stone-100 px-1 py-0.5 rounded">orders</code> (newest first).
+          </p>
+        </div>
+
+        <!-- REFRESH BUTTON & SEARCH -->
+        <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+          <input 
+            type="text" 
+            id="orderSearchInput" 
+            placeholder="Search customer, phone, order ID..." 
+            oninput="filterOrdersList()"
+            class="px-3.5 py-2 text-xs border border-stone-300 rounded-xl bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 text-stone-800 w-full sm:w-64"
+          />
+
+          <!-- 🔄 WORKING REFRESH BUTTON -->
+          <button 
+            type="button" 
+            id="refreshOrdersBtn"
+            onclick="triggerOrdersRefresh()"
+            class="px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-bold text-xs shadow-sm shadow-orange-500/20 transition flex items-center gap-2 flex-shrink-0 cursor-pointer"
+          >
+            <svg id="refreshSpinnerIcon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span id="refreshBtnLabel">Refresh Orders</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STATUS FILTER PILLS -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+        <button onclick="filterByStatus('all')" id="statusTabAll" class="order-filter-pill px-3.5 py-1.5 rounded-xl font-bold bg-stone-900 text-white shadow-xs transition">
+          All ({{ orders|length }})
+        </button>
+        <button onclick="filterByStatus('New')" id="statusTabNew" class="order-filter-pill px-3.5 py-1.5 rounded-xl font-semibold bg-white text-blue-700 border border-blue-200 hover:bg-blue-50 transition">
+          New
+        </button>
+        <button onclick="filterByStatus('Processing')" id="statusTabProcessing" class="order-filter-pill px-3.5 py-1.5 rounded-xl font-semibold bg-white text-purple-700 border border-purple-200 hover:bg-purple-50 transition">
+          Processing
+        </button>
+        <button onclick="filterByStatus('Shipped')" id="statusTabShipped" class="order-filter-pill px-3.5 py-1.5 rounded-xl font-semibold bg-white text-amber-700 border border-amber-200 hover:bg-amber-50 transition">
+          Shipped
+        </button>
+        <button onclick="filterByStatus('Delivered')" id="statusTabDelivered" class="order-filter-pill px-3.5 py-1.5 rounded-xl font-semibold bg-white text-emerald-700 border border-emerald-200 hover:bg-emerald-50 transition">
+          Delivered
+        </button>
+      </div>
+
+      <!-- REFRESH FEEDBACK BANNER -->
+      <div id="refreshAlertNotice" class="hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-between">
+        <span id="refreshAlertMsg">✓ Orders refreshed successfully from Firebase.</span>
+        <button type="button" onclick="this.parentElement.classList.add('hidden')" class="text-emerald-600 hover:text-emerald-900 font-bold">✕</button>
+      </div>
+
+      <!-- ORDERS CONTAINER (NEWEST FIRST) -->
+      <div id="ordersContainer" class="space-y-4">
+        {% if not orders %}
+          <div class="text-center py-16 bg-white rounded-3xl border border-dashed border-stone-300 p-8 space-y-3">
+            <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-100 flex items-center justify-center text-2xl">
+              📦
+            </div>
+            <h3 class="text-base font-bold text-stone-800">No orders received yet</h3>
+            <p class="text-xs text-stone-500 max-w-sm mx-auto">
+              When customers place orders from the storefront cart, they will appear here in real time.
+            </p>
+            <a href="/" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold shadow transition">
+              Visit Storefront to Test Order →
+            </a>
+          </div>
+        {% else %}
+          {% for order in orders %}
+            <div 
+              class="order-card bg-white rounded-2xl border border-stone-200/80 shadow-sm p-5 space-y-4 transition hover:border-orange-200"
+              data-order-id="{{ order.order_id }}"
+              data-customer="{{ order.customer_name | lower }}"
+              data-phone="{{ order.phone }}"
+              data-city="{{ order.city | lower }}"
+              data-status="{{ order.status }}"
+            >
+              <!-- TOP BAR: ID, DATE, STATUS BADGE -->
+              <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-stone-100">
+                <div class="flex items-center gap-3">
+                  <span class="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-sm font-bold shadow-xs">
+                    📦
+                  </span>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="font-mono text-sm sm:text-base font-black text-stone-900">
+                        {{ order.order_id }}
+                      </span>
+                      <span class="text-[10px] px-2 py-0.5 rounded font-mono bg-stone-100 text-stone-500">COD</span>
+                    </div>
+                    <p class="text-[11px] text-stone-400 mt-0.5">
+                      Placed: {{ order.created_at or order.timestamp }}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- CURRENT STATUS BADGE -->
+                <div>
+                  {% if order.status == 'New' %}
+                    <span class="px-3 py-1 rounded-full text-xs font-black bg-blue-100 text-blue-800 border border-blue-200">New Order</span>
+                  {% elif order.status == 'Processing' %}
+                    <span class="px-3 py-1 rounded-full text-xs font-black bg-purple-100 text-purple-800 border border-purple-200">Processing</span>
+                  {% elif order.status == 'Shipped' %}
+                    <span class="px-3 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-900 border border-amber-200">Shipped</span>
+                  {% elif order.status == 'Delivered' %}
+                    <span class="px-3 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-200">Delivered</span>
+                  {% else %}
+                    <span class="px-3 py-1 rounded-full text-xs font-black bg-stone-100 text-stone-700 border border-stone-200">{{ order.status }}</span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- MIDDLE: CUSTOMER DETAILS & ITEMS LIST -->
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-4 text-xs">
+                <!-- CUSTOMER INFO (5 COLS) -->
+                <div class="md:col-span-5 bg-stone-50 rounded-xl p-3.5 space-y-2 border border-stone-100">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-stone-900 text-sm">{{ order.customer_name }}</span>
+                    <!-- WHATSAPP CUSTOMER BUTTON -->
+                    <a 
+                      href="https://wa.me/{{ order.phone | replace('+', '') | replace(' ', '') | replace('-', '') }}?text={{ ('Assalamu Alaikum ' ~ order.customer_name ~ ', this is Muffinns Bakery regarding your order #' ~ order.order_id) | urlencode }}" 
+                      target="_blank" 
+                      class="px-2 py-0.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] flex items-center gap-1 shadow-xs"
+                      title="Chat with customer on WhatsApp"
+                    >
+                      <span>💬 WhatsApp</span>
+                    </a>
+                  </div>
+                  <div class="text-stone-600 space-y-1">
+                    <p><strong class="text-stone-700">Phone:</strong> <span class="font-mono text-stone-900 font-semibold">{{ order.phone }}</span></p>
+                    <p><strong class="text-stone-700">Address:</strong> {{ order.address }}</p>
+                    <p><strong class="text-stone-700">City:</strong> {{ order.city }}</p>
+                  </div>
+                </div>
+
+                <!-- ITEMS TABLE (7 COLS) -->
+                <div class="md:col-span-7 bg-stone-50 rounded-xl p-3.5 border border-stone-100 flex flex-col justify-between">
+                  <div class="space-y-1.5 divide-y divide-stone-200/60 max-h-36 overflow-y-auto pr-1">
+                    {% for itm in order.items %}
+                      <div class="pt-1.5 first:pt-0 flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-2">
+                          <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+                          <span class="font-semibold text-stone-800">{{ itm.name or itm.itemTitle }}</span>
+                          <span class="text-stone-400 text-[11px] font-mono">× {{ itm.qty or itm.quantity or 1 }}</span>
+                        </div>
+                        <span class="font-mono font-bold text-stone-900">
+                          Rs {{ (itm.price or 0) * (itm.qty or itm.quantity or 1) }}
+                        </span>
+                      </div>
+                    {% endfor %}
+                  </div>
+
+                  <div class="pt-2 border-t border-stone-200 flex items-center justify-between mt-2">
+                    <span class="font-bold text-stone-600">Grand Total:</span>
+                    <span class="font-black text-sm text-orange-600 font-mono">Rs {{ order.total or order.total_price }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- BOTTOM: STATUS UPDATE BUTTONS (NEW, PROCESSING, SHIPPED, DELIVERED) -->
+              <div class="pt-3 border-t border-stone-100 flex flex-wrap items-center justify-between gap-3">
+                <span class="text-[11px] text-stone-400 font-semibold">Change Order Status:</span>
+                
+                <div class="flex items-center gap-1.5">
+                  <!-- 1. NEW -->
+                  <form action="/bwp-panel-7781/orders/{{ order.order_id }}/status" method="POST" class="inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <input type="hidden" name="status" value="New">
+                    <button 
+                      type="submit" 
+                      class="px-2.5 py-1 rounded-lg text-xs font-bold transition
+                        {% if order.status == 'New' %} bg-blue-600 text-white shadow-xs {% else %} bg-stone-100 text-stone-700 hover:bg-stone-200 {% endif %}"
+                    >
+                      New
+                    </button>
+                  </form>
+
+                  <!-- 2. PROCESSING -->
+                  <form action="/bwp-panel-7781/orders/{{ order.order_id }}/status" method="POST" class="inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <input type="hidden" name="status" value="Processing">
+                    <button 
+                      type="submit" 
+                      class="px-2.5 py-1 rounded-lg text-xs font-bold transition
+                        {% if order.status == 'Processing' %} bg-purple-600 text-white shadow-xs {% else %} bg-stone-100 text-stone-700 hover:bg-stone-200 {% endif %}"
+                    >
+                      Processing
+                    </button>
+                  </form>
+
+                  <!-- 3. SHIPPED -->
+                  <form action="/bwp-panel-7781/orders/{{ order.order_id }}/status" method="POST" class="inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <input type="hidden" name="status" value="Shipped">
+                    <button 
+                      type="submit" 
+                      class="px-2.5 py-1 rounded-lg text-xs font-bold transition
+                        {% if order.status == 'Shipped' %} bg-amber-600 text-white shadow-xs {% else %} bg-stone-100 text-stone-700 hover:bg-stone-200 {% endif %}"
+                    >
+                      Shipped
+                    </button>
+                  </form>
+
+                  <!-- 4. DELIVERED -->
+                  <form action="/bwp-panel-7781/orders/{{ order.order_id }}/status" method="POST" class="inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <input type="hidden" name="status" value="Delivered">
+                    <button 
+                      type="submit" 
+                      class="px-2.5 py-1 rounded-lg text-xs font-bold transition
+                        {% if order.status == 'Delivered' %} bg-emerald-600 text-white shadow-xs {% else %} bg-stone-100 text-stone-700 hover:bg-stone-200 {% endif %}"
+                    >
+                      Delivered
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- JAVASCRIPT LOGIC & STATE HANDLING -->
+  <script>
+    const PRODUCTS_DATA = {{ products | tojson | safe }};
+    let currentOriginal = { name: '', price: '', description: '', image_url: '', category: '' };
+
+    // --- MAIN TAB SWITCHING (PRODUCTS CRUD vs ORDERS LIST) ---
+    function switchMainTab(tab) {
+      const prodSection = document.getElementById('mainProductsSection');
+      const orderSection = document.getElementById('mainOrdersSection');
+      const prodBtn = document.getElementById('mainTabProductsBtn');
+      const orderBtn = document.getElementById('mainTabOrdersBtn');
+      const label = document.getElementById('activeSectionLabel');
+
+      if (tab === 'orders') {
+        prodSection.classList.add('hidden');
+        orderSection.classList.remove('hidden');
+        orderBtn.className = "px-5 py-2.5 rounded-xl text-sm font-bold bg-orange-600 text-white shadow-xs transition flex items-center gap-2";
+        prodBtn.className = "px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-stone-700 hover:bg-stone-100 border border-stone-300 shadow-xs transition flex items-center gap-2";
+        if (label) label.innerText = "Orders Management";
+        
+        // Update URL query string without reloading
+        const url = new URL(window.location);
+        url.searchParams.set('tab', 'orders');
+        window.history.replaceState({}, '', url);
+      } else {
+        orderSection.classList.add('hidden');
+        prodSection.classList.remove('hidden');
+        prodBtn.className = "px-5 py-2.5 rounded-xl text-sm font-bold bg-stone-900 text-white shadow-xs transition flex items-center gap-2";
+        orderBtn.className = "px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-stone-700 hover:bg-stone-100 border border-stone-300 shadow-xs transition flex items-center gap-2";
+        if (label) label.innerText = "Products Catalog";
+
+        const url = new URL(window.location);
+        url.searchParams.set('tab', 'products');
+        window.history.replaceState({}, '', url);
+      }
+    }
+
+    // --- SUB-TAB SWITCHING IN PRODUCTS (EDIT vs ADD) ---
+    function switchProductSubTab(sub) {
+      const editSection = document.getElementById('sectionEdit');
+      const addSection = document.getElementById('sectionAdd');
+      const editBtn = document.getElementById('tabEditBtn');
+      const addBtn = document.getElementById('tabAddBtn');
+
+      if (sub === 'add') {
+        editSection.classList.add('hidden');
+        addSection.classList.remove('hidden');
+        addBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-orange-500 text-white shadow-sm transition";
+        editBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white text-stone-600 border border-stone-300 hover:bg-stone-50 transition";
+      } else {
+        editSection.classList.remove('hidden');
+        addSection.classList.add('hidden');
+        editBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-orange-500 text-white shadow-sm transition";
+        addBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white text-stone-600 border border-stone-300 hover:bg-stone-50 transition";
+      }
+    }
+
+    // --- 🔄 REFRESH ORDERS BUTTON HANDLER ---
+    async function triggerOrdersRefresh() {
+      const btn = document.getElementById('refreshOrdersBtn');
+      const spinner = document.getElementById('refreshSpinnerIcon');
+      const label = document.getElementById('refreshBtnLabel');
+      const notice = document.getElementById('refreshAlertNotice');
+      const noticeMsg = document.getElementById('refreshAlertMsg');
+
+      if (spinner) spinner.classList.add('animate-spin');
+      if (label) label.innerText = "Refreshing...";
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/orders');
+        if (res.ok) {
+          const data = await res.json();
+          const orders = Array.isArray(data) ? data : (data.orders || []);
+          
+          // Render updated orders into container
+          renderDynamicOrders(orders);
+
+          // Update badges
+          const countBadge = document.getElementById('tabOrderCountBadge');
+          const headerBadge = document.getElementById('orderHeaderCountBadge');
+          if (countBadge) countBadge.innerText = orders.length;
+          if (headerBadge) headerBadge.innerText = `${orders.length} Orders`;
+
+          if (notice && noticeMsg) {
+            noticeMsg.innerText = `✓ Orders refreshed from Firebase at ${new Date().toLocaleTimeString()} (${orders.length} total).`;
+            notice.classList.remove('hidden');
+            setTimeout(() => notice.classList.add('hidden'), 4000);
+          }
+        } else {
+          // If api fails, perform seamless page reload preserving tab
+          window.location.href = '/bwp-panel-7781?tab=orders';
+        }
+      } catch (err) {
+        console.warn('AJAX refresh failed, reloading page...', err);
+        window.location.href = '/bwp-panel-7781?tab=orders';
+      } finally {
+        if (spinner) spinner.classList.remove('animate-spin');
+        if (label) label.innerText = "Refresh Orders";
+        btn.disabled = false;
+      }
+    }
+
+    function renderDynamicOrders(orders) {
+      const container = document.getElementById('ordersContainer');
+      if (!container) return;
+
+      if (!orders || orders.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-16 bg-white rounded-3xl border border-dashed border-stone-300 p-8 space-y-3">
+            <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-100 flex items-center justify-center text-2xl">📦</div>
+            <h3 class="text-base font-bold text-stone-800">No orders received yet</h3>
+            <p class="text-xs text-stone-500 max-w-sm mx-auto">When customers place orders from the storefront cart, they will appear here in real time.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = orders.map(order => {
+        const ordId = order.order_id || order.id || 'ORD-00000';
+        const custName = order.customer_name || 'Valued Customer';
+        const phone = order.phone || '';
+        const address = order.address || '';
+        const city = order.city || 'Bahawalpur';
+        const status = order.status || 'New';
+        const total = order.total || order.total_price || 0;
+        const placed = order.created_at || order.timestamp || '';
+        const cleanPhone = phone.replace(/[^0-9]/g, '');
+
+        const statusBadge = status === 'New' 
+          ? '<span class="px-3 py-1 rounded-full text-xs font-black bg-blue-100 text-blue-800 border border-blue-200">New Order</span>'
+          : status === 'Processing'
+          ? '<span class="px-3 py-1 rounded-full text-xs font-black bg-purple-100 text-purple-800 border border-purple-200">Processing</span>'
+          : status === 'Shipped'
+          ? '<span class="px-3 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-900 border border-amber-200">Shipped</span>'
+          : status === 'Delivered'
+          ? '<span class="px-3 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-200">Delivered</span>'
+          : `<span class="px-3 py-1 rounded-full text-xs font-black bg-stone-100 text-stone-700">${status}</span>`;
+
+        const itemsHtml = (order.items || []).map(it => `
+          <div class="pt-1.5 first:pt-0 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+              <span class="font-semibold text-stone-800">${it.name || it.itemTitle || 'Item'}</span>
+              <span class="text-stone-400 text-[11px] font-mono">× ${it.qty || it.quantity || 1}</span>
+            </div>
+            <span class="font-mono font-bold text-stone-900">Rs ${(it.price || 0) * (it.qty || it.quantity || 1)}</span>
+          </div>
+        `).join('');
+
+        const statusButtons = ['New', 'Processing', 'Shipped', 'Delivered'].map(st => `
+          <form action="/bwp-panel-7781/orders/${ordId}/status" method="POST" class="inline">
+            <input type="hidden" name="status" value="${st}">
+            <button type="submit" class="px-2.5 py-1 rounded-lg text-xs font-bold transition ${status === st ? 'bg-stone-900 text-white shadow-xs' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}">
+              ${st}
+            </button>
+          </form>
+        `).join('');
+
+        return `
+          <div 
+            class="order-card bg-white rounded-2xl border border-stone-200/80 shadow-sm p-5 space-y-4 transition hover:border-orange-200"
+            data-order-id="${ordId}"
+            data-customer="${custName.toLowerCase()}"
+            data-phone="${phone}"
+            data-city="${city.toLowerCase()}"
+            data-status="${status}"
+          >
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-stone-100">
+              <div class="flex items-center gap-3">
+                <span class="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-sm font-bold shadow-xs">📦</span>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-mono text-sm sm:text-base font-black text-stone-900">${ordId}</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded font-mono bg-stone-100 text-stone-500">COD</span>
+                  </div>
+                  <p class="text-[11px] text-stone-400 mt-0.5">Placed: ${placed}</p>
+                </div>
+              </div>
+              <div>${statusBadge}</div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 text-xs">
+              <div class="md:col-span-5 bg-stone-50 rounded-xl p-3.5 space-y-2 border border-stone-100">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-stone-900 text-sm">${custName}</span>
+                  ${cleanPhone ? `
+                    <a href="https://wa.me/${cleanPhone}?text=Assalamu%20Alaikum%20${encodeURIComponent(custName)}%2C%20this%20is%20Muffinns%20Bakery%20regarding%20order%20%23${ordId}" target="_blank" class="px-2 py-0.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] flex items-center gap-1">
+                      💬 WhatsApp
+                    </a>
+                  ` : ''}
+                </div>
+                <div class="text-stone-600 space-y-1">
+                  <p><strong class="text-stone-700">Phone:</strong> <span class="font-mono text-stone-900 font-semibold">${phone}</span></p>
+                  <p><strong class="text-stone-700">Address:</strong> ${address}</p>
+                  <p><strong class="text-stone-700">City:</strong> ${city}</p>
+                </div>
+              </div>
+              <div class="md:col-span-7 bg-stone-50 rounded-xl p-3.5 border border-stone-100 flex flex-col justify-between">
+                <div class="space-y-1.5 divide-y divide-stone-200/60 max-h-36 overflow-y-auto pr-1">
+                  ${itemsHtml}
+                </div>
+                <div class="pt-2 border-t border-stone-200 flex items-center justify-between mt-2">
+                  <span class="font-bold text-stone-600">Grand Total:</span>
+                  <span class="font-black text-sm text-orange-600 font-mono">Rs ${total}</span>
+                </div>
+              </div>
+            </div>
+            <div class="pt-3 border-t border-stone-100 flex flex-wrap items-center justify-between gap-3">
+              <span class="text-[11px] text-stone-400 font-semibold">Change Order Status:</span>
+              <div class="flex items-center gap-1.5">${statusButtons}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // --- FILTER ORDERS BY STATUS & KEYWORD ---
+    let currentStatusFilter = 'all';
+
+    function filterByStatus(status) {
+      currentStatusFilter = status;
+      document.querySelectorAll('.order-filter-pill').forEach(btn => {
+        btn.className = "order-filter-pill px-3.5 py-1.5 rounded-xl font-semibold bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 transition";
+      });
+      const activeBtn = document.getElementById(`statusTab${status.charAt(0).toUpperCase() + status.slice(1)}`);
+      if (activeBtn) {
+        activeBtn.className = "order-filter-pill px-3.5 py-1.5 rounded-xl font-bold bg-stone-900 text-white shadow-xs transition";
+      }
+      filterOrdersList();
+    }
+
+    function filterOrdersList() {
+      const q = (document.getElementById('orderSearchInput')?.value || '').toLowerCase().trim();
+      const cards = document.querySelectorAll('.order-card');
+      
+      cards.forEach(card => {
+        const id = (card.getAttribute('data-order-id') || '').toLowerCase();
+        const cust = (card.getAttribute('data-customer') || '').toLowerCase();
+        const phone = (card.getAttribute('data-phone') || '').toLowerCase();
+        const city = (card.getAttribute('data-city') || '').toLowerCase();
+        const status = card.getAttribute('data-status') || '';
+
+        const matchesQuery = !q || id.includes(q) || cust.includes(q) || phone.includes(q) || city.includes(q);
+        const matchesStatus = currentStatusFilter === 'all' || status.toLowerCase() === currentStatusFilter.toLowerCase();
+
+        if (matchesQuery && matchesStatus) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // --- PRODUCT CRUD EDIT AUTO-FILL & PREVIEW ---
+    function handleProductChange(productId) {
+      if (!productId || !PRODUCTS_DATA[productId]) {
+        return;
+      }
+      const data = PRODUCTS_DATA[productId];
+
+      currentOriginal = {
+        name: String(data.name || '').trim(),
+        price: String(data.price || '').trim(),
+        description: String(data.description || '').trim(),
+        image_url: String(data.image_url || data.image || '').trim(),
+        category: String(data.category || 'Cakes').trim()
+      };
+
+      document.getElementById('input_name').value = currentOriginal.name;
+      document.getElementById('input_price').value = currentOriginal.price;
+      document.getElementById('input_desc').value = currentOriginal.description;
+      document.getElementById('input_image_url').value = currentOriginal.image_url;
+      
+      const catSelect = document.getElementById('input_category');
+      if (catSelect) {
+        catSelect.value = currentOriginal.category;
+      }
+
+      updateImagePreview();
+      checkModifications();
+    }
+
+    function updateImagePreview() {
+      const url = document.getElementById('input_image_url').value.trim();
+      const img = document.getElementById('previewImg');
+      const placeholder = document.getElementById('previewPlaceholder');
+      const errorDiv = document.getElementById('previewError');
+
+      if (url) {
+        img.src = url;
+        img.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+        errorDiv.classList.add('hidden');
+      } else {
+        img.classList.add('hidden');
+        img.src = '';
+        placeholder.classList.remove('hidden');
+        errorDiv.classList.add('hidden');
+      }
+    }
+
+    function handleLocalFilePreview(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.getElementById('previewImg');
+          img.src = e.target.result;
+          img.classList.remove('hidden');
+          document.getElementById('previewPlaceholder').classList.add('hidden');
+          document.getElementById('previewError').classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function checkModifications() {
+      const nameVal = document.getElementById('input_name').value.trim();
+      const priceVal = document.getElementById('input_price').value.trim();
+      const descVal = document.getElementById('input_desc').value.trim();
+      const catVal = document.getElementById('input_category').value.trim();
+      const imgVal = document.getElementById('input_image_url').value.trim();
+
+      const changedFields = [];
+      if (nameVal !== currentOriginal.name) changedFields.push('Name');
+      if (priceVal !== currentOriginal.price) changedFields.push('Price');
+      if (descVal !== currentOriginal.description) changedFields.push('Description');
+      if (catVal !== currentOriginal.category) changedFields.push('Category');
+      if (imgVal !== currentOriginal.image_url) changedFields.push('Image URL');
+
+      const summary = document.getElementById('diffSummary');
+      if (changedFields.length > 0) {
+        summary.innerHTML = `<span class="text-orange-700 font-bold">Modified:</span> ${changedFields.join(', ')}`;
+      } else {
+        summary.innerText = "No modifications detected.";
+      }
+    }
+
+    function handleDeleteCurrentProduct() {
+      const select = document.getElementById('product_select');
+      const productId = select.value;
+      if (!productId) {
+        alert("Please select a product first.");
+        return;
+      }
+      if (confirm(`Are you sure you want to permanently delete product "${productId}" from Firebase Firestore?`)) {
+        const form = document.getElementById('deleteForm');
+        form.action = `/bwp-panel-7781/products/delete/${encodeURIComponent(productId)}`;
+        form.submit();
+      }
+    }
+
+    // Auto-initialize on DOM load
+    window.addEventListener('DOMContentLoaded', () => {
+      // Check query param for active tab
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('tab') === 'orders') {
+        switchMainTab('orders');
+      }
+
+      const select = document.getElementById('product_select');
+      if (select && select.value) {
+        handleProductChange(select.value);
+      }
+    });
+  </script>
+
+</body>
+</html>

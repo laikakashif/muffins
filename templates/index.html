@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Muffinns Sweets & Bakers • Patashay</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-amber-50/30 text-stone-800 min-h-screen antialiased flex flex-col font-sans">
+
+  <!-- TOP ANNOUNCEMENT BAR -->
+  <div class="bg-stone-900 text-stone-300 text-xs py-2 px-4 border-b border-stone-800">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <span>✨ Fresh daily oven drops • Handcrafted in Bahawalpur</span>
+      <div class="flex items-center gap-4 text-[11px]">
+        <a href="https://wa.me/{{ whatsapp_number }}" target="_blank" class="hover:text-white flex items-center gap-1 font-semibold text-emerald-400">
+          <span>💬 WhatsApp: +{{ whatsapp_number }}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN HEADER -->
+  <header class="bg-white border-b border-amber-200/60 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <a href="/" class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white shadow-md shadow-orange-500/20 text-2xl font-black">
+          M
+        </a>
+        <div>
+          <a href="/" class="text-xl sm:text-2xl font-black text-stone-900 tracking-tight hover:text-orange-600 transition">Muffinns</a>
+          <p class="text-xs text-stone-500 font-medium -mt-0.5">Artisanal Bakery & Patashay</p>
+        </div>
+      </div>
+
+      <!-- RIGHT NAVIGATION: CATALOG, CART & ADMIN -->
+      <nav class="flex items-center gap-2 sm:gap-3">
+        <a href="#catalog" class="text-xs sm:text-sm font-semibold text-stone-700 hover:text-orange-600 transition px-3 py-1.5 rounded-lg hover:bg-orange-50">
+          Catalog
+        </a>
+
+        <!-- CART BUTTON WITH LIVE BADGE -->
+        <a href="/cart" id="navCartBtn" class="relative text-xs font-bold px-3.5 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white shadow-sm shadow-orange-500/20 transition flex items-center gap-1.5 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+          <span class="hidden xs:inline">Cart</span>
+          <span id="navCartBadge" class="bg-white text-orange-600 text-[11px] font-black px-1.5 py-0.2 rounded-full min-w-[18px] text-center font-mono">{{ cart_count or 0 }}</span>
+        </a>
+
+        <!-- ADMIN LINK -->
+        <a href="/bwp-panel-7781" class="text-xs font-bold px-3 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white shadow-sm transition flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <span class="hidden sm:inline">Admin</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO BANNER -->
+  <section class="bg-gradient-to-b from-white via-amber-50/50 to-transparent py-8 sm:py-12 px-4 text-center">
+    <div class="max-w-3xl mx-auto space-y-3">
+      <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-orange-100 text-orange-700 border border-orange-200">
+        Artisanal Cakes • Traditional Sweets • Savories
+      </span>
+      <h2 class="text-3xl sm:text-4xl font-black text-stone-900 tracking-tight">
+        Freshly Baked Artisanal Treats in Bahawalpur
+      </h2>
+      <p class="text-sm sm:text-base text-stone-600 max-w-xl mx-auto">
+        Browse our handcrafted bakery selection, add your favorite treats to cart, or order immediately on WhatsApp.
+      </p>
+      <div class="flex items-center justify-center gap-3 pt-2">
+        <a href="#catalog" class="px-5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs sm:text-sm font-bold shadow-md shadow-orange-500/20 transition">
+          Browse Bakery Catalog ↓
+        </a>
+        <a href="https://wa.me/{{ whatsapp_number }}?text=Hello%20Muffinns%20Bakery%2C%20I%20would%20like%20to%20place%20an%20order." target="_blank" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-emerald-600/20 transition flex items-center gap-1.5">
+          <span>💬 Order on WhatsApp</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEARCH & CATEGORY FILTER BAR -->
+  <div id="catalog" class="max-w-7xl mx-auto px-4 sm:px-6 w-full space-y-4">
+    <div class="bg-white rounded-2xl border border-stone-200/80 shadow-sm p-4 sm:p-5 flex flex-col md:flex-row items-center justify-between gap-4">
+      
+      <!-- SEARCH INPUT -->
+      <div class="w-full md:w-80 relative">
+        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </span>
+        <input 
+          type="text" 
+          id="clientSearchInput" 
+          placeholder="Search products by name or description..." 
+          value="{{ search_query }}"
+          class="w-full rounded-xl border border-stone-300 bg-stone-50 pl-10 pr-4 py-2.5 text-xs sm:text-sm text-stone-900 shadow-inner focus:bg-white focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none transition"
+          oninput="filterCatalog()"
+        />
+      </div>
+
+      <!-- CATEGORY FILTER PILLS -->
+      <div class="w-full md:w-auto flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none" id="categoryPills">
+        <button 
+          type="button" 
+          onclick="selectCategory('all')" 
+          class="cat-pill px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition bg-orange-500 text-white shadow-sm cursor-pointer"
+          data-category="all"
+        >
+          All Items
+        </button>
+        {% for cat in all_categories %}
+          <button 
+            type="button" 
+            onclick="selectCategory('{{ cat }}')" 
+            class="cat-pill px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-stone-100 text-stone-600 hover:bg-stone-200 cursor-pointer"
+            data-category="{{ cat }}"
+          >
+            {{ cat }}
+          </button>
+        {% endfor %}
+      </div>
+
+      <!-- COUNT BADGE -->
+      <div class="hidden sm:block text-xs font-mono text-stone-500">
+        Showing: <span id="visibleCount" class="font-bold text-stone-900">{{ products|length }}</span> items
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PRODUCTS GRID -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-1 w-full space-y-6">
+
+    {% if not products %}
+      <div class="text-center py-20 bg-white rounded-3xl border border-stone-200 p-8 space-y-4 shadow-sm">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-100 flex items-center justify-center text-3xl">
+          🧁
+        </div>
+        <h3 class="text-lg font-bold text-stone-800">No bakery items found</h3>
+        <p class="text-xs text-stone-500 max-w-sm mx-auto">
+          Please add products via the Admin Dashboard or check your connection to Firebase Firestore.
+        </p>
+        <a href="/bwp-panel-7781" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-500 text-white font-bold text-xs shadow transition">
+          Open Admin Panel →
+        </a>
+      </div>
+    {% else %}
+      <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+        {% for pid, pdata in products.items() %}
+          <div 
+            class="product-card group bg-white rounded-2xl border border-stone-200/80 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-md hover:border-orange-200 transition duration-200"
+            data-id="{{ pid }}"
+            data-name="{{ pdata.name | lower }}"
+            data-desc="{{ pdata.description | lower }}"
+            data-category="{{ pdata.category }}"
+          >
+            <!-- IMAGE CONTAINER -->
+            <div class="h-48 w-full bg-stone-100 relative overflow-hidden flex items-center justify-center">
+              {% if pdata.image_url %}
+                <img 
+                  src="{{ pdata.image_url }}" 
+                  alt="{{ pdata.name }}" 
+                  loading="lazy"
+                  class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                  onerror="this.src='/assets/placeholder-food.png'; this.onerror=null;"
+                />
+              {% else %}
+                <div class="text-center text-stone-400 p-4">
+                  <span class="text-4xl">🍰</span>
+                  <p class="text-[11px] font-medium mt-1">Muffinns Fresh Bake</p>
+                </div>
+              {% endif %}
+
+              <!-- CATEGORY BADGE -->
+              <span class="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-lg bg-stone-900/80 backdrop-blur-xs text-white text-[10px] font-bold tracking-wider uppercase shadow-xs">
+                {{ pdata.category }}
+              </span>
+            </div>
+
+            <!-- BODY -->
+            <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
+              <div>
+                <span class="text-[10px] font-mono text-stone-400 uppercase tracking-wider">ID: {{ pid }}</span>
+                <h3 class="font-bold text-stone-900 text-base leading-snug group-hover:text-orange-600 transition">
+                  {{ pdata.name }}
+                </h3>
+                {% if pdata.description %}
+                  <p class="text-xs text-stone-500 line-clamp-2 mt-1 leading-relaxed">
+                    {{ pdata.description }}
+                  </p>
+                {% endif %}
+              </div>
+
+              <!-- PRICE & ACTION BUTTONS -->
+              <div class="pt-3 border-t border-stone-100 flex flex-col gap-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-base font-extrabold text-orange-600 font-mono">Rs {{ pdata.price }}</span>
+                  <a 
+                    href="https://wa.me/{{ whatsapp_number }}?text={{ ('Hi Muffinns Bakery, I would like to order: ' ~ pdata.name ~ ' (Rs ' ~ pdata.price ~ ')') | urlencode }}" 
+                    target="_blank" 
+                    class="text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2 py-1 rounded-lg transition flex items-center gap-1"
+                    title="Order direct on WhatsApp"
+                  >
+                    <span>💬 WhatsApp</span>
+                  </a>
+                </div>
+
+                <!-- ADD TO CART BUTTON -->
+                <button 
+                  type="button" 
+                  onclick="addToCart('{{ pid }}', '{{ pdata.name | replace(\"'\", \"\\\\'\") }}', {{ pdata.price }}, '{{ pdata.image_url | replace(\"'\", \"\\\\'\") }}', '{{ pdata.category | replace(\"'\", \"\\\\'\") }}')"
+                  class="w-full text-xs font-bold py-2 px-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white shadow-sm shadow-orange-500/20 active:scale-98 transition flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                  <span>Add to Cart</span>
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- NO SEARCH RESULTS NOTICE -->
+      <div id="noResultsNotice" class="hidden text-center py-16 bg-white rounded-3xl border border-stone-200 p-8 space-y-3">
+        <div class="text-4xl">🔍</div>
+        <h4 class="text-base font-bold text-stone-800">No matching items found</h4>
+        <p class="text-xs text-stone-500">Try adjusting your search keywords or resetting the category filter.</p>
+        <button 
+          type="button" 
+          onclick="resetFilters()"
+          class="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-xs font-bold transition cursor-pointer"
+        >
+          Clear Filters
+        </button>
+      </div>
+    {% endif %}
+
+  </main>
+
+  <!-- FLOATING WHATSAPP BUTTON (BOTTOM-LEFT) -->
+  <a 
+    href="https://wa.me/{{ whatsapp_number }}?text=Hello%20Muffinns%20Bakery%2C%20I%20have%20an%20inquiry%20about%20your%20menu." 
+    target="_blank" 
+    class="fixed bottom-6 left-6 z-40 bg-emerald-600 hover:bg-emerald-700 text-white p-3.5 rounded-full shadow-2xl flex items-center gap-2 text-xs font-bold transition hover:scale-105"
+    title="Chat with Muffinns Bakery on WhatsApp"
+  >
+    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+    <span class="hidden sm:inline">WhatsApp Us</span>
+  </a>
+
+  <!-- FLOATING CART PILL (BOTTOM-RIGHT) -->
+  <div id="floatingCartPill" class="fixed bottom-6 right-6 z-40 hidden">
+    <a href="/cart" class="flex items-center gap-2.5 px-5 py-3 rounded-full bg-stone-900 hover:bg-stone-800 text-white shadow-2xl border border-stone-700 text-xs font-bold transition hover:scale-105">
+      <span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
+      <span>View Cart</span>
+      <span id="floatingCartCount" class="bg-orange-500 text-white px-2 py-0.5 rounded-full text-[10px] font-black font-mono">0</span>
+      <span id="floatingCartTotal" class="text-orange-300 font-bold ml-1 font-mono">Rs 0</span>
+    </a>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="cartToast" class="fixed top-20 right-6 z-50 transform -translate-y-10 opacity-0 pointer-events-none transition-all duration-300 bg-stone-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 border border-stone-800 text-xs sm:text-sm">
+    <div class="w-7 h-7 rounded-xl bg-orange-500 flex items-center justify-center text-white text-xs font-bold shadow-xs">
+      🛒
+    </div>
+    <div class="space-y-0.5">
+      <p id="toastMessage" class="font-bold text-stone-100">Item added to cart!</p>
+      <a href="/cart" class="text-[11px] text-orange-400 hover:text-orange-300 font-semibold underline block">View Cart & Checkout →</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="mt-auto bg-stone-900 text-stone-400 text-xs py-8 border-t border-stone-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <p class="font-semibold text-stone-200">Muffinns Sweets & Bakers (Patashay)</p>
+        <p class="mt-0.5 text-stone-400 text-[11px]">Connected to Firebase Firestore <code class="font-mono text-stone-300">/products</code></p>
+      </div>
+      <div class="flex items-center gap-4 text-xs">
+        <a href="/" class="hover:text-white">Home</a>
+        <a href="/cart" class="hover:text-white">Shopping Cart</a>
+        <a href="/bwp-panel-7781" class="hover:text-white">Admin Management</a>
+        {% if is_admin_logged_in %}
+          <a href="/bwp-panel-7781/logout" class="text-rose-400 hover:text-rose-300">Sign Out</a>
+        {% else %}
+          <a href="/bwp-panel-7781/login" class="text-amber-400 hover:text-amber-300">Admin Login</a>
+        {% endif %}
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const CART_STORAGE_KEY = 'muffinns_cart';
+
+    function getLocalCart() {
+      try {
+        const raw = localStorage.getItem(CART_STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveLocalCart(cart) {
+      try {
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+      } catch (e) {}
+      updateCartDisplay();
+    }
+
+    function updateCartDisplay() {
+      const cart = getLocalCart();
+      const totalCount = cart.reduce((sum, item) => sum + (parseInt(item.quantity || item.qty) || 1), 0);
+      const subtotal = cart.reduce((sum, item) => sum + ((parseFloat(item.price) || 0) * (parseInt(item.quantity || item.qty) || 1)), 0);
+
+      // Update navbar badge
+      const badge = document.getElementById('navCartBadge');
+      if (badge) {
+        badge.innerText = totalCount;
+      }
+
+      // Update floating pill
+      const pill = document.getElementById('floatingCartPill');
+      const countEl = document.getElementById('floatingCartCount');
+      const totalEl = document.getElementById('floatingCartTotal');
+
+      if (pill && countEl && totalEl) {
+        if (totalCount > 0) {
+          pill.classList.remove('hidden');
+          countEl.innerText = totalCount;
+          totalEl.innerText = 'Rs ' + subtotal;
+        } else {
+          pill.classList.add('hidden');
+        }
+      }
+    }
+
+    function showToast(itemName) {
+      const toast = document.getElementById('cartToast');
+      const msg = document.getElementById('toastMessage');
+      if (!toast || !msg) return;
+
+      msg.innerText = `Added "${itemName}" to cart!`;
+      toast.classList.remove('-translate-y-10', 'opacity-0', 'pointer-events-none');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      if (window.toastTimeout) clearTimeout(window.toastTimeout);
+      window.toastTimeout = setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('-translate-y-10', 'opacity-0', 'pointer-events-none');
+      }, 2500);
+    }
+
+    async function addToCart(id, name, price, imageUrl, category) {
+      const cleanPrice = parseFloat(price) || 0;
+
+      // 1. Send POST to Flask /cart/add/<id> so session['cart'] stays in sync
+      try {
+        fetch(`/cart/add/${encodeURIComponent(id)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            price: cleanPrice,
+            quantity: 1,
+            image_url: imageUrl || '',
+            category: category || 'Bakery'
+          })
+        }).catch(() => {});
+      } catch (e) {}
+
+      // 2. Save in localStorage for persistent client-side storage
+      const cart = getLocalCart();
+      const existingIdx = cart.findIndex(item => (item.id || item.product_id) === id);
+      if (existingIdx > -1) {
+        const q = (parseInt(cart[existingIdx].quantity || cart[existingIdx].qty) || 1) + 1;
+        cart[existingIdx].quantity = q;
+        cart[existingIdx].qty = q;
+        cart[existingIdx].total = q * cleanPrice;
+      } else {
+        cart.push({
+          id,
+          product_id: id,
+          name,
+          price: cleanPrice,
+          quantity: 1,
+          qty: 1,
+          total: cleanPrice,
+          image_url: imageUrl || '',
+          category: category || 'Bakery'
+        });
+      }
+
+      saveLocalCart(cart);
+      showToast(name);
+    }
+
+    // Catalog filtering
+    let activeCategory = 'all';
+
+    function selectCategory(category) {
+      activeCategory = category;
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        if (btn.getAttribute('data-category') === category) {
+          btn.className = "cat-pill px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition bg-orange-500 text-white shadow-sm cursor-pointer";
+        } else {
+          btn.className = "cat-pill px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-stone-100 text-stone-600 hover:bg-stone-200 cursor-pointer";
+        }
+      });
+      filterCatalog();
+    }
+
+    function filterCatalog() {
+      const query = (document.getElementById('clientSearchInput')?.value || '').toLowerCase().trim();
+      const cards = document.querySelectorAll('.product-card');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const name = card.getAttribute('data-name') || '';
+        const desc = card.getAttribute('data-desc') || '';
+        const cat = card.getAttribute('data-category') || '';
+
+        const matchesQuery = !query || name.includes(query) || desc.includes(query) || cat.toLowerCase().includes(query);
+        const matchesCategory = activeCategory === 'all' || cat.toLowerCase() === activeCategory.toLowerCase();
+
+        if (matchesQuery && matchesCategory) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      const countEl = document.getElementById('visibleCount');
+      if (countEl) countEl.innerText = visibleCount;
+
+      const noResults = document.getElementById('noResultsNotice');
+      if (noResults) {
+        if (visibleCount === 0 && cards.length > 0) {
+          noResults.classList.remove('hidden');
+        } else {
+          noResults.classList.add('hidden');
+        }
+      }
+    }
+
+    function resetFilters() {
+      const input = document.getElementById('clientSearchInput');
+      if (input) input.value = '';
+      selectCategory('all');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateCartDisplay();
+    });
+  </script>
+
+</body>
+</html>
