@@ -385,6 +385,64 @@ export default function CartDrawer({
       }
     };
 
+    const buildDirectOrder = (): Order => {
+      const randSuffix = Math.floor(1000 + Math.random() * 9000);
+      const generatedId = `MUFF-${randSuffix}`;
+      return {
+        id: generatedId,
+        order_id: generatedId,
+        customerName: orderPayload.customerName,
+        customer_name: orderPayload.customerName,
+        customerPhone: orderPayload.customerPhone,
+        phone: orderPayload.customerPhone,
+        customerAddress: orderPayload.customerAddress,
+        address: orderPayload.customerAddress,
+        city: 'Bahawalpur',
+        items: orderPayload.items,
+        totalAmount: orderPayload.totalAmount,
+        total_price: orderPayload.totalAmount,
+        status: 'New',
+        paymentMethod: orderPayload.paymentMethod,
+        paymentReference: orderPayload.paymentReference,
+        createdAt: new Date().toISOString(),
+        created_at: new Date().toLocaleString()
+      };
+    };
+
+    const handleDirectFirestorePlacement = async () => {
+      const directOrder = buildDirectOrder();
+      await saveOrderToFirestore(directOrder);
+      recordSyncedOrderInLocalStorage(directOrder);
+
+      if (paymentMethod === 'Bank Transfer') {
+        setCreatedOrderForQR(directOrder);
+      } else if (paymentMethod === 'Credit / Debit Card' || paymentMethod === 'Mobile Wallet') {
+        setGatewayDetails({
+          type: paymentMethod === 'Credit / Debit Card' ? 'card' : 'wallet',
+          cardName: cardName || customerName,
+          cardNumberLast4: last4,
+          cardBrand: brand,
+          walletType: walletProvider,
+          walletNumber: walletNumber || customerPhone,
+        });
+        setCreatedOrderForGateway(directOrder);
+      } else {
+        triggerConfettiAnimation();
+        setCustomerName('');
+        setCustomerPhone('');
+        setCustomerAddress('');
+        setPaymentReference('');
+        setCardNumber('');
+        setCardName('');
+        setCardExpiry('');
+        setCardCvv('');
+        setWalletNumber('');
+        setProofFile(null);
+        onClearCart();
+        onOrderPlaced(directOrder);
+      }
+    };
+
     // If browser is already known to be offline, save immediately to IndexedDB
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
       await handleSaveOfflineFallback('Device is currently offline');
@@ -396,64 +454,80 @@ export default function CartDrawer({
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 7000);
 
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderPayload),
-        signal: controller.signal
-      });
+      let response: Response | null = null;
+      try {
+        response = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orderPayload),
+          signal: controller.signal
+        });
+      } catch (fetchErr) {
+        // Fetch to local /api failed (e.g. static host like Netlify)
+        console.warn('API endpoint fetch not reachable, falling back to direct Firestore:', fetchErr);
+      }
 
       clearTimeout(timeoutId);
 
-      const data = await response.json();
+      if (response && response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          if (data.order) {
+            saveOrderToFirestore(data.order).catch(err => console.warn('[Firestore] Sync notice:', err));
+          }
 
-      if (response.ok && data.success) {
-        if (data.order) {
-          saveOrderToFirestore(data.order).catch(err => console.warn('[Firestore] Sync notice:', err));
-        }
-
-        if (paymentMethod === 'Bank Transfer') {
-          // Open QR code payment modal for interactive simulated clearance
-          setCreatedOrderForQR(data.order);
-        } else if (paymentMethod === 'Credit / Debit Card' || paymentMethod === 'Mobile Wallet') {
-          // Open 256-bit Secure Online Payment Gateway 3D OTP Verification Modal
-          setGatewayDetails({
-            type: paymentMethod === 'Credit / Debit Card' ? 'card' : 'wallet',
-            cardName: cardName || customerName,
-            cardNumberLast4: last4,
-            cardBrand: brand,
-            walletType: walletProvider,
-            walletNumber: walletNumber || customerPhone,
-          });
-          setCreatedOrderForGateway(data.order);
-        } else {
-          // Cash on Delivery
-          triggerConfettiAnimation();
-          setCustomerName('');
-          setCustomerPhone('');
-          setCustomerAddress('');
-          setPaymentReference('');
-          setCardNumber('');
-          setCardName('');
-          setCardExpiry('');
-          setCardCvv('');
-          setWalletNumber('');
-          setProofFile(null);
-          onClearCart();
-          onOrderPlaced(data.order);
-        }
-      } else {
-        // If server returns error, check if it's 5xx (server error) vs 4xx validation
-        if (response.status >= 500) {
-          await handleSaveOfflineFallback(`Server unavailable (Status ${response.status})`);
+          if (paymentMethod === 'Bank Transfer') {
+            // Open QR code payment modal for interactive simulated clearance
+            setCreatedOrderForQR(data.order);
+          } else if (paymentMethod === 'Credit / Debit Card' || paymentMethod === 'Mobile Wallet') {
+            // Open 256-bit Secure Online Payment Gateway 3D OTP Verification Modal
+            setGatewayDetails({
+              type: paymentMethod === 'Credit / Debit Card' ? 'card' : 'wallet',
+              cardName: cardName || customerName,
+              cardNumberLast4: last4,
+              cardBrand: brand,
+              walletType: walletProvider,
+              walletNumber: walletNumber || customerPhone,
+            });
+            setCreatedOrderForGateway(data.order);
+          } else {
+            // Cash on Delivery
+            triggerConfettiAnimation();
+            setCustomerName('');
+            setCustomerPhone('');
+            setCustomerAddress('');
+            setPaymentReference('');
+            setCardNumber('');
+            setCardName('');
+            setCardExpiry('');
+            setCardCvv('');
+            setWalletNumber('');
+            setProofFile(null);
+            onClearCart();
+            onOrderPlaced(data.order);
+          }
+          return;
         } else {
           setErrorMessage(data.error || 'Failed to register your order. Please check the details and try again.');
+          return;
         }
       }
+
+      // If /api returned 404/500 or was unreachable, fallback directly to Firestore (Netlify support)
+      try {
+        await handleDirectFirestorePlacement();
+      } catch (directErr) {
+        console.warn('Direct Firestore write failed, saving to IndexedDB offline storage:', directErr);
+        await handleSaveOfflineFallback('Direct cloud sync unavailable');
+      }
     } catch (err: any) {
-      // Network fetch error, abort timeout, or server unreachable -> Save into IndexedDB!
-      console.warn('Network error during order submission. Saving to IndexedDB:', err);
-      await handleSaveOfflineFallback(err.name === 'AbortError' ? 'Network connection timed out' : 'Network connection lost');
+      // Network fetch error, abort timeout, or server unreachable
+      try {
+        await handleDirectFirestorePlacement();
+      } catch (directErr) {
+        console.warn('Network error during order submission. Saving to IndexedDB:', err);
+        await handleSaveOfflineFallback(err.name === 'AbortError' ? 'Network connection timed out' : 'Network connection lost');
+      }
     } finally {
       setIsSubmitting(false);
     }

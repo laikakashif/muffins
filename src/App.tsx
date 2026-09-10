@@ -34,6 +34,7 @@ import { CartItem, Order } from './types';
 import MuffinnsLogo from './components/MuffinnsLogo';
 import { initFirestoreMenuSync } from './utils/menuStorage';
 import { initOfflineOrderAutoSync } from './utils/offlineOrderDB';
+import { addInquiryToFirestore } from './firebase/config';
 
 const TikTokIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
   <svg 
@@ -499,23 +500,41 @@ export default function App() {
     setInquiryStatus(null);
     setInquirySubmitting(true);
 
+    const payload = {
+      name: inquiryName.trim(),
+      email: inquiryEmail.trim(),
+      phone: inquiryPhone.trim(),
+      subject: inquirySubject.trim(),
+      message: inquiryMessage.trim(),
+      rating: inquiryRating
+    };
+
     try {
-      const response = await fetch('/api/inquiries', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: inquiryName.trim(),
-          email: inquiryEmail.trim(),
-          phone: inquiryPhone.trim(),
-          subject: inquirySubject.trim(),
-          message: inquiryMessage.trim(),
-          rating: inquiryRating
-        })
-      });
+      let recorded = false;
+      try {
+        const response = await fetch('/api/inquiries', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
 
-      const data = await response.json();
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            recorded = true;
+          }
+        }
+      } catch (fetchErr) {
+        // Local /api/inquiries unavailable (e.g. Netlify static hosting)
+      }
 
-      if (response.ok && data.success) {
+      // If server wasn't reachable or returned non-200, record directly to Firestore
+      if (!recorded) {
+        await addInquiryToFirestore(payload);
+        recorded = true;
+      }
+
+      if (recorded) {
         setInquiryStatus({
           type: 'success',
           text: `Thank you, ${inquiryName}! Your ${inquiryRating}-Star feedback has been recorded. Our management team at Muffinnscomplain@gmail.com has been notified.`
@@ -529,7 +548,7 @@ export default function App() {
         setInquiryRating(5);
         setHoverRating(0);
       } else {
-        setInquiryStatus({ type: 'error', text: data.error || 'Failed to submit feedback.' });
+        setInquiryStatus({ type: 'error', text: 'Failed to submit feedback.' });
       }
     } catch (err) {
       setInquiryStatus({ type: 'error', text: 'Connection issue. Please email Muffinnscomplain@gmail.com directly.' });

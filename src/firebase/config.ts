@@ -15,8 +15,21 @@ import {
   orderBy,
   serverTimestamp
 } from 'firebase/firestore';
-import firebaseConfig from '../../firebase-applet-config.json';
+import baseFirebaseConfig from '../../firebase-applet-config.json';
 import { MenuItem, Order, OrderStatus } from '../types';
+
+// Support both static JSON and Netlify/Vite environment variables
+export const firebaseConfig = {
+  projectId: import.meta.env?.VITE_FIREBASE_PROJECT_ID || baseFirebaseConfig.projectId,
+  appId: import.meta.env?.VITE_FIREBASE_APP_ID || baseFirebaseConfig.appId,
+  apiKey: import.meta.env?.VITE_FIREBASE_API_KEY || baseFirebaseConfig.apiKey,
+  authDomain: import.meta.env?.VITE_FIREBASE_AUTH_DOMAIN || baseFirebaseConfig.authDomain,
+  databaseURL: import.meta.env?.VITE_FIREBASE_DATABASE_URL || baseFirebaseConfig.databaseURL,
+  firestoreDatabaseId: import.meta.env?.VITE_FIREBASE_DATABASE_ID || baseFirebaseConfig.firestoreDatabaseId || '(default)',
+  storageBucket: import.meta.env?.VITE_FIREBASE_STORAGE_BUCKET || baseFirebaseConfig.storageBucket,
+  messagingSenderId: import.meta.env?.VITE_FIREBASE_MESSAGING_SENDER_ID || baseFirebaseConfig.messagingSenderId,
+  measurementId: import.meta.env?.VITE_FIREBASE_MEASUREMENT_ID || baseFirebaseConfig.measurementId
+};
 
 export const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
@@ -69,6 +82,7 @@ export const MENU_COLLECTION = 'menu_items';
 export const CUSTOM_IMAGES_COLLECTION = 'custom_images';
 export const POSTERS_COLLECTION = 'posters';
 export const ORDERS_COLLECTION = 'orders';
+export const INQUIRIES_COLLECTION = 'inquiries';
 
 // Helper to seed initial menu items into Firestore if empty without overwriting user customizations
 export async function initializeMenuInFirestore(defaultMenuItems: MenuItem[]) {
@@ -701,6 +715,30 @@ export async function updateOrderStatusInFirestore(orderId: string, status: Orde
   } catch (err: any) {
     console.error(`[Firestore] Failed to update status for order #${orderId}:`, err);
     handleFirestoreError(err, OperationType.UPDATE, `${ORDERS_COLLECTION}/${orderId}`);
+    throw err;
+  }
+}
+
+export async function addInquiryToFirestore(inquiry: {
+  name: string;
+  email: string;
+  phone?: string;
+  subject: string;
+  message: string;
+  rating?: number;
+}): Promise<string> {
+  try {
+    const inqRef = collection(db, INQUIRIES_COLLECTION);
+    const docRef = await addDoc(inqRef, {
+      ...inquiry,
+      createdAt: serverTimestamp(),
+      created_at_iso: new Date().toISOString()
+    });
+    console.log(`[Firestore] Inquiry #${docRef.id} saved to Firestore.`);
+    return docRef.id;
+  } catch (err: any) {
+    console.error('[Firestore] Failed to save inquiry:', err);
+    handleFirestoreError(err, OperationType.CREATE, INQUIRIES_COLLECTION);
     throw err;
   }
 }

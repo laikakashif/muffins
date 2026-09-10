@@ -213,6 +213,83 @@
           "allow": ["read", "create", "update", "delete"]
         }
       ]
+    },
+    "inquiries": {
+      "description": "Customer inquiries and feedback messages",
+      "attributes": {
+        "id": {
+          "type": "string",
+          "description": "Inquiry ID",
+          "required": true
+        },
+        "name": {
+          "type": "string",
+          "description": "Customer name",
+          "required": true
+        },
+        "email": {
+          "type": "string",
+          "description": "Customer email",
+          "required": true
+        },
+        "phone": {
+          "type": "string",
+          "description": "Customer phone",
+          "required": false
+        },
+        "subject": {
+          "type": "string",
+          "description": "Inquiry subject",
+          "required": true
+        },
+        "message": {
+          "type": "string",
+          "description": "Inquiry message",
+          "required": true
+        },
+        "rating": {
+          "type": "number",
+          "description": "Rating out of 5",
+          "required": false
+        },
+        "createdAt": {
+          "type": "timestamp",
+          "description": "Submission timestamp",
+          "required": false
+        }
+      },
+      "accessRules": [
+        {
+          "userRole": "public",
+          "allow": ["read", "create", "update", "delete"]
+        }
+      ]
+    },
+    "admins": {
+      "description": "Authorized staff credentials for dashboard administration",
+      "attributes": {
+        "id": {
+          "type": "string",
+          "description": "Admin document ID",
+          "required": true
+        },
+        "username": {
+          "type": "string",
+          "description": "Admin username",
+          "required": true
+        },
+        "role": {
+          "type": "string",
+          "description": "Admin role",
+          "required": true
+        }
+      },
+      "accessRules": [
+        {
+          "userRole": "public",
+          "allow": ["read"]
+        }
+      ]
     }
   }
 }
